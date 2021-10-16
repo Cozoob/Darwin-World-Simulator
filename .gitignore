@@ -51,3 +51,13 @@ gradle-app.setting
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+# .idea
+.idea
+
+# rest of the gradle files
+build.gradle
+gradle
+gradlew
+gradlew.bat
+settings.gradle
