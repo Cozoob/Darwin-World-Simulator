@@ -3,26 +3,22 @@ import static java.lang.System.out;
 
 public class World {
     public static void main(String[] args){
-        String[] moves = {"f", "f", "r", "l", "o", "c"};
+        // String[] moves = {"f", "f", "r", "l", "o", "c"};
+        Direction[] moves = {Direction.FORWARD, Direction.FORWARD, Direction.RIGHT, Direction.LEFT};
         out.print("Start\n");
         run(moves);
         out.print("Stop");
     }
 
-    public static void run(String[] strArray) {
-
-        for(String str : strArray) {
-            String message = switch(str) {
-                case "f" -> "Zwierzak idzie do przodu\n";
-                case "l" -> "Zwierzak skręca w lewo\n";
-                case "b" -> "Zwierzak idzie do tyłu\n";
-                case "r" -> "Zwierzak skręca w prawo\n";
-                default -> "Nieznana komenda";
-                };
-            if(!message.equals("Nieznana komenda")) {
-                out.print(message);
-
-            }
+    public static void run(Direction[] moves) {
+        for(Direction move : moves){
+            String message = switch(move){
+                case BACKWARD -> "Zwierzak idzie do tyłu\n";
+                case LEFT -> "Zwierzak skręca w lewo\n";
+                case RIGHT -> "Zwierzak skręca w prawo\n";
+                case FORWARD -> "Zwierzak idzie do przodu\n";
+            };
+            out.print(message);
         }
     }
 }
