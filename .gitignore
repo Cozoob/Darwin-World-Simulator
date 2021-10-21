@@ -57,7 +57,3 @@ gradle-app.setting
 
 # rest of the gradle files
 build.gradle
-gradle
-gradlew
-gradlew.bat
-settings.gradle
