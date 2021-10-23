@@ -54,6 +54,3 @@ gradle-app.setting
 
 # .idea
 .idea
-
-# rest of the gradle files
-build.gradle
