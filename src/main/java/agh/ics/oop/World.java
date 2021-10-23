@@ -1,4 +1,6 @@
 package agh.ics.oop;
+import java.util.Map;
+
 import static java.lang.System.out;
 /* napisz hashcode */
 
@@ -68,16 +70,16 @@ class Vector2d {
 }
 public class World {
     public static void main(String[] args){
-        Vector2d V1 = new Vector2d(1, 2);
-        // out.print(V1);
-        Vector2d V2 = new Vector2d(1, 2);
-        // out.print(V1.precedes(V2));
-        // out.print(V1.equals(V2));
-//        out.print(V1.equals2(V2) + "\n");
-//        out.print(V1.hashCode() + "\n");
-//        out.print(V2.hashCode());
-        out.print(V1.opposite());
-
+//        Vector2d position1 = new Vector2d(1,2);
+//        System.out.println(position1);
+//        Vector2d position2 = new Vector2d(-2,1);
+//        System.out.println(position2);
+//        System.out.println(position1.add(position2));
+        MapDirection x = MapDirection.EAST;
+        out.println(x);
+        out.println(x.next());
+        out.println(x.previous());
+        out.println(x.toUnitVector());
     }
 
 
