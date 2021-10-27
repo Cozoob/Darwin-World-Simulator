@@ -24,15 +24,32 @@ public class Vector2dTest {
         Assertions.assertTrue(new Vector2d(1,2).precedes(new Vector2d(1,2)));
         Assertions.assertTrue(new Vector2d(1,2).precedes(new Vector2d(3,5)));
         Assertions.assertFalse(new Vector2d(1,2).precedes(new Vector2d(1,1)));
+        Assertions.assertTrue(new Vector2d(1,1).precedes(new Vector2d(1,2)));
+        Assertions.assertTrue(new Vector2d(1,1).precedes(new Vector2d(2,2)));
+        Assertions.assertTrue(new Vector2d(1,1).precedes(new Vector2d(2,1)));
+        Assertions.assertFalse(new Vector2d(1,1).precedes(new Vector2d(0,2)));
+        Assertions.assertFalse(new Vector2d(1,1).precedes(new Vector2d(0,1)));
+        Assertions.assertFalse(new Vector2d(1,1).precedes(new Vector2d(0,0)));
+        Assertions.assertFalse(new Vector2d(1,1).precedes(new Vector2d(1,0)));
+        Assertions.assertFalse(new Vector2d(1,1).precedes(new Vector2d(2,0)));
     }
 
     @Test
     public void testFollows(){
         Assertions.assertTrue(new Vector2d(1,2).follows(new Vector2d(1,2)));
         Assertions.assertTrue(new Vector2d(1,2).follows(new Vector2d(1,1)));
+        Assertions.assertTrue(new Vector2d(1,2).follows(new Vector2d(0,2)));
         Assertions.assertTrue(new Vector2d(1,2).follows(new Vector2d(-1,-2)));
         Assertions.assertTrue(new Vector2d(1,2).follows(new Vector2d(-11,2)));
-        Assertions.assertFalse(new Vector2d(1,2).follows(new Vector2d(5,2)));
+        Assertions.assertTrue(new Vector2d(1,2).follows(new Vector2d(0,2)));
+        Assertions.assertTrue(new Vector2d(1,1).follows(new Vector2d(0,1)));
+        Assertions.assertTrue(new Vector2d(1,1).follows(new Vector2d(0,0)));
+        Assertions.assertTrue(new Vector2d(1,1).follows(new Vector2d(1,0)));
+        Assertions.assertFalse(new Vector2d(1,1).follows(new Vector2d(2,0)));
+        Assertions.assertFalse(new Vector2d(1,1).follows(new Vector2d(2,1)));
+        Assertions.assertFalse(new Vector2d(1,1).follows(new Vector2d(2,2)));
+        Assertions.assertFalse(new Vector2d(1,1).follows(new Vector2d(1,2)));
+        Assertions.assertFalse(new Vector2d(1,1).follows(new Vector2d(0,2)));
     }
 
     @Test
@@ -65,8 +82,8 @@ public class Vector2dTest {
 
     @Test
     public void testOpposite(){
-        Assertions.assertEquals(new Vector2d(2,3), new Vector2d(3,2).opposite());
-        Assertions.assertEquals(new Vector2d(-5,-8), new Vector2d(-8,-5).opposite());
+        Assertions.assertEquals(new Vector2d(3,2), new Vector2d(3,2).opposite());
+        Assertions.assertEquals(new Vector2d(8,5), new Vector2d(-8,-5).opposite());
         Assertions.assertNotEquals(new Vector2d(3,2), new Vector2d(3,2).opposite());
     }
 }
