@@ -13,21 +13,25 @@ public class Animal {
         position = new Vector2d(2,2);
     }
 
-    public String toString(){
-        return position.toString() + ", " + mapDirection.toString();
-    }
+    // getter
+    public Vector2d getPosition() {return position;}
+
+    // getter
+    public MapDirection getMapDirection() {return mapDirection;}
+
+    public String toString(){return position.toString() + ", " + mapDirection.toString();}
 
     public void move(MoveDirection direction){
        switch (direction){
            case FORWARD -> {
                Vector2d newPosition = this.position.add(this.mapDirection.toUnitVector());
-               if(newPosition.precedes(upRightCorner)){
+               if(newPosition.follows(downLeftCorner) && newPosition.precedes(upRightCorner)){
                     this.position = newPosition;
                }
            }
            case BACKWARD -> {
                Vector2d newPosition = this.position.add(this.mapDirection.toUnitVector().opposite());
-               if(newPosition.follows(downLeftCorner)){
+               if(newPosition.follows(downLeftCorner) && newPosition.precedes(upRightCorner)){
                    this.position = newPosition;
                }
            }
