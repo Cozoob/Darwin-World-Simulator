@@ -1,4 +1,5 @@
 package agh.ics.oop;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -7,22 +8,10 @@ import static java.lang.System.out;
 public class World {
 
     public static void main(String[] args){
-        Animal dog = new Animal();
-        out.println(dog);
-//        dog.move(MoveDirection.RIGHT);
-//        dog.move(MoveDirection.FORWARD);
-//        dog.move(MoveDirection.FORWARD);
-//        dog.move(MoveDirection.FORWARD);
-//        out.println(dog);
-        String[] moves = {"r", "f", "f", "t", "forward", "c"};
-        OptionsParser parser = new OptionsParser();
-        ArrayList<MoveDirection> realMoves = parser.parse(moves);
-        for(MoveDirection move : realMoves){
-            dog.move(move);
-            out.println(dog);
+        ArrayList<MoveDirection> directions = new OptionsParser().parse(args);
+        IWorldMap map = new RectangularMap(10, 5);
+        Vector2d[] positions = { new Vector2d(2,2), new Vector2d(3,4) };
+        IEngine engine = new SimulationEngine(directions, map, positions);
+        engine.run();
         }
     }
-
-
-
-}
