@@ -29,7 +29,7 @@ public class SimulationEngineTest {
         engine2.run();
 
         Assertions.assertEquals(animals2.get(0), map2.objectAt(new Vector2d(2, 0)));
-        Assertions.assertEquals(animals2.get(1), map2.objectAt(new Vector2d(3, 5)));
+        Assertions.assertEquals(animals2.get(1), map2.objectAt(new Vector2d(3, 4)));
     }
 
     @BeforeEach
