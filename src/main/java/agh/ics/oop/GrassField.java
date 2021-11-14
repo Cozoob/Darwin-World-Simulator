@@ -4,10 +4,10 @@ import java.util.Random;
 import java.lang.Math;
 
 
-public class GrassField implements IWorldMap {
+public class GrassField extends AbstractWorldMap {
     private ArrayList<Grass> grassPositions;
     private final int upperBound;
-    private ArrayList<Animal> animals;
+    //private ArrayList<Animal> animals;
     private Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
     private Vector2d upperRight = new Vector2d(0, 0);
 
@@ -37,7 +37,7 @@ public class GrassField implements IWorldMap {
 
     private boolean canPutGrass(Vector2d position){
         for(Grass grass : this.grassPositions){
-            if(grass.position.equals(position)) {
+            if(grass.getPosition().equals(position)) {
                 return false;
             }
         }
@@ -47,8 +47,8 @@ public class GrassField implements IWorldMap {
     private void findCorners(){
         // szukam wektorow lowerLeft oraz upperRight w grassPositions i animals
         for (Grass grass : this.grassPositions){
-            this.lowerLeft = this.lowerLeft.lowerLeft(grass.position);
-            this.upperRight = this.upperRight.upperRight(grass.position);
+            this.lowerLeft = this.lowerLeft.lowerLeft(grass.getPosition());
+            this.upperRight = this.upperRight.upperRight(grass.getPosition());
         }
         for(Animal animal : this.animals){
             this.lowerLeft = this.lowerLeft.lowerLeft(animal.getPosition());
@@ -56,9 +56,7 @@ public class GrassField implements IWorldMap {
         }
     }
 
-    private boolean isOnMap(Vector2d position){
-        return position.follows(new Vector2d(0,0));
-    }
+    private boolean isOnMap(Vector2d position){return position.follows(new Vector2d(0,0));}
 
     @Override
     public boolean canMoveTo(Vector2d position) {
@@ -69,32 +67,20 @@ public class GrassField implements IWorldMap {
     }
 
     @Override
-    public boolean place(Animal animal) {
-        if (canMoveTo(animal.getPosition())){
-            this.animals.add(animal);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isOccupied(Vector2d position) {return this.objectAt(position) != null;}
-
-    @Override
     public Object objectAt(Vector2d position) {
-        for (Animal animal : this.animals){
-            if (animal.getPosition().equals(position)){
-                return animal;
-            }
+        Object object = super.objectAt(position);
+        if (object instanceof Animal){
+            return object;
         }
         for (Grass grass : this.grassPositions){
-            if (grass.position.equals(position)){
+            if (grass.getPosition().equals(position)){
                 return grass;
             }
         }
         return null;
     }
 
+    @Override
     public String toString(){
         findCorners();
         return new MapVisualizer(this).draw(this.lowerLeft, this.upperRight);
