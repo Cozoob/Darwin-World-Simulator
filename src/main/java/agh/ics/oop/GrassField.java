@@ -10,7 +10,6 @@ public class GrassField implements IWorldMap {
     private ArrayList<Animal> animals;
     private Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
     private Vector2d upperRight = new Vector2d(0, 0);
-    private Object Animal;
 
     public GrassField(int amountOfGrass){
         this.grassPositions = new ArrayList<Grass>();
@@ -23,7 +22,7 @@ public class GrassField implements IWorldMap {
 
     private void putGrass(){
         Random rand = new Random();
-//        Random rand = new Random(103); - do testow
+//        Random rand = new Random(103); // - do testow
         Vector2d randomVector = new Vector2d(rand.nextInt(this.upperBound), rand.nextInt(this.upperBound));
         boolean isPut = false; // nie podoba mi sie to, ale nie wiem jak inaczej
         while(!isPut) {
@@ -63,11 +62,10 @@ public class GrassField implements IWorldMap {
 
     @Override
     public boolean canMoveTo(Vector2d position) {
-        Object object = objectAt(position);
-        if(object != null && object.getClass().equals(this.Animal)){
-            return false;
+        if(!(objectAt(position) instanceof Animal)){
+            return isOnMap(position);
         }
-        return isOnMap(position);
+        return false;
     }
 
     @Override
@@ -94,7 +92,6 @@ public class GrassField implements IWorldMap {
                 return grass;
             }
         }
-
         return null;
     }
 
