@@ -7,14 +7,13 @@ public class RectangularMap implements IWorldMap{
     public final int width;
     public final int height;
     private Vector2d endCorner;
-    private List<Animal> animals;
+    private ArrayList<Animal> animals;
 
     public RectangularMap(int width, int height){
         if (0 < width && 0 < height) {
             this.width = width;
             this.height = height;
-            this.endCorner = new Vector2d(width - 1, height - 1); // ma byc width - 1, height - 1 ale trzeba przez to test poprawic
-            // bo szerokosc = szerokosc - 1 ""
+            this.endCorner = new Vector2d(width - 1, height - 1);
         }
         else {
             this.width = 4;
@@ -28,9 +27,7 @@ public class RectangularMap implements IWorldMap{
     }
 
     @Override
-    public boolean canMoveTo(Vector2d position) {
-        return isOnMap(position) && !isOccupied(position);
-    }
+    public boolean canMoveTo(Vector2d position) {return isOnMap(position) && !isOccupied(position);}
 
     @Override
     public boolean place(Animal animal) {
@@ -42,9 +39,7 @@ public class RectangularMap implements IWorldMap{
     }
 
     @Override
-    public boolean isOccupied(Vector2d position) {
-        return this.objectAt(position) != null;
-    }
+    public boolean isOccupied(Vector2d position) {return this.objectAt(position) != null;}
 
     @Override
     public Object objectAt(Vector2d position) {
@@ -56,7 +51,5 @@ public class RectangularMap implements IWorldMap{
         return null;
     }
 
-    public String toString(){
-        return new MapVisualizer(this).draw(new Vector2d(0, 0), endCorner);
-    }
+    public String toString(){return new MapVisualizer(this).draw(new Vector2d(0, 0), endCorner);}
 }
