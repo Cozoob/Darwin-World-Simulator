@@ -28,9 +28,9 @@ public class GrassFieldTest {
         Assertions.assertTrue(map.place(new Animal(map, new Vector2d(0,0))));
         Assertions.assertTrue(map.place(new Animal(map, new Vector2d(15, 5))));
         Assertions.assertTrue(map.place(new Animal(map, new Vector2d(14, 6))));
-        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(-1, 2))));
-        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(-1, -1))));
-        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(1, -2))));
+        Assertions.assertTrue(map.place(new Animal(map, new Vector2d(-1, 2))));
+        Assertions.assertTrue(map.place(new Animal(map, new Vector2d(-1, -1))));
+        Assertions.assertTrue(map.place(new Animal(map, new Vector2d(1, -2))));
     }
 
     @Test
@@ -39,9 +39,9 @@ public class GrassFieldTest {
         Assertions.assertTrue(map.canMoveTo(new Vector2d(14,1)));
         Assertions.assertFalse(map.canMoveTo(new Vector2d(2,2)));
         Assertions.assertFalse(map.canMoveTo(new Vector2d(1,1)));
-        Assertions.assertFalse(map.canMoveTo(new Vector2d(-2,-2)));
-        Assertions.assertFalse(map.canMoveTo(new Vector2d(-2,2)));
-        Assertions.assertFalse(map.canMoveTo(new Vector2d(2,-2)));
+        Assertions.assertTrue(map.canMoveTo(new Vector2d(-2,-2)));
+        Assertions.assertTrue(map.canMoveTo(new Vector2d(-2,2)));
+        Assertions.assertTrue(map.canMoveTo(new Vector2d(2,-2)));
         Assertions.assertFalse(map.canMoveTo(new Vector2d(2,2)));
         Assertions.assertTrue(map.canMoveTo(new Vector2d(16,2)));
         Assertions.assertTrue(map.canMoveTo(new Vector2d(2,6)));

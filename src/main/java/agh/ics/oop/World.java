@@ -10,7 +10,9 @@ import static java.lang.System.out;
 public class World {
 
     public static void main(String[] args) {
-        String[] moves = new String[] {"f", "b", "r", "l", "r", "f", "b", "b", "l"};
+//        String[] moves = new String[] {"f", "b", "r", "l", "r", "f", "b", "b", "l"};
+
+        String[] moves = new String[] {"b", "b", "b", "b", "b", "b", "b", "b", "b"};
 
         ArrayList<MoveDirection> directions = new OptionsParser().parse(moves);
         IWorldMap map = new GrassField(10);

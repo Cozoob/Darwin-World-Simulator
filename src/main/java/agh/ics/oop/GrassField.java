@@ -5,11 +5,11 @@ import java.lang.Math;
 
 
 public class GrassField extends AbstractWorldMap {
-    private ArrayList<Grass> grassPositions;
+    private final ArrayList<Grass> grassPositions;
     private final int upperBound;
     //private ArrayList<Animal> animals;
     private Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
-    private Vector2d upperRight = new Vector2d(0, 0);
+    private Vector2d upperRight = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
 
     public GrassField(int amountOfGrass){
         this.grassPositions = new ArrayList<Grass>();
@@ -23,16 +23,13 @@ public class GrassField extends AbstractWorldMap {
     private void putGrass(){
         Random rand = new Random();
 //        Random rand = new Random(103); // - do testow
-        Vector2d randomVector = new Vector2d(rand.nextInt(this.upperBound), rand.nextInt(this.upperBound));
-        boolean isPut = false; // nie podoba mi sie to, ale nie wiem jak inaczej
-        while(!isPut) {
-            if (canPutGrass(randomVector)) {
-                this.grassPositions.add(new Grass(randomVector));
-                isPut = true;
-            } else {
-                randomVector = new Vector2d(rand.nextInt(this.upperBound), rand.nextInt(this.upperBound));
-            }
-        }
+        Vector2d randomVector;
+
+        do {
+           randomVector = new Vector2d(rand.nextInt(this.upperBound), rand.nextInt(this.upperBound));
+        } while (!canPutGrass(randomVector));
+
+        this.grassPositions.add(new Grass(randomVector));
     }
 
     private boolean canPutGrass(Vector2d position){
@@ -56,15 +53,8 @@ public class GrassField extends AbstractWorldMap {
         }
     }
 
-    private boolean isOnMap(Vector2d position){return position.follows(new Vector2d(0,0));}
-
     @Override
-    public boolean canMoveTo(Vector2d position) {
-        if(!(objectAt(position) instanceof Animal)){
-            return isOnMap(position);
-        }
-        return false;
-    }
+    public boolean canMoveTo(Vector2d position) { return !( objectAt(position) instanceof Animal);}
 
     @Override
     public Object objectAt(Vector2d position) {
