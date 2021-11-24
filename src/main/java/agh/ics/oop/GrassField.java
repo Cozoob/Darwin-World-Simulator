@@ -1,20 +1,17 @@
 package agh.ics.oop;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 import java.lang.Math;
 
-
 public class GrassField extends AbstractWorldMap {
-    private final ArrayList<Grass> grassPositions;
+    private final LinkedHashMap<Vector2d, Grass> grassPositions;
     private final int upperBound;
-    //private ArrayList<Animal> animals;
     private Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
     private Vector2d upperRight = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
 
     public GrassField(int amountOfGrass){
-        this.grassPositions = new ArrayList<Grass>();
+        this.grassPositions = new LinkedHashMap<>();
         this.upperBound = (int)Math.sqrt(amountOfGrass*10) + 1;
-        this.animals = new ArrayList<Animal>();
+        this.animals = new LinkedHashMap<>();
         for (int i = 0; i < amountOfGrass; i++){
             putGrass();
         }
@@ -29,12 +26,12 @@ public class GrassField extends AbstractWorldMap {
            randomVector = new Vector2d(rand.nextInt(this.upperBound), rand.nextInt(this.upperBound));
         } while (!canPutGrass(randomVector));
 
-        this.grassPositions.add(new Grass(randomVector));
+        this.grassPositions.put(randomVector, new Grass(randomVector));
     }
 
     private boolean canPutGrass(Vector2d position){
-        for(Grass grass : this.grassPositions){
-            if(grass.getPosition().equals(position)) {
+        for(Vector2d vector : this.grassPositions.keySet()){
+            if(vector.equals(position)) {
                 return false;
             }
         }
@@ -43,13 +40,13 @@ public class GrassField extends AbstractWorldMap {
 
     private void findCorners(){
         // szukam wektorow lowerLeft oraz upperRight w grassPositions i animals
-        for (Grass grass : this.grassPositions){
-            this.lowerLeft = this.lowerLeft.lowerLeft(grass.getPosition());
-            this.upperRight = this.upperRight.upperRight(grass.getPosition());
+        for (Vector2d vector : this.grassPositions.keySet()){
+            this.lowerLeft = this.lowerLeft.lowerLeft(vector);
+            this.upperRight = this.upperRight.upperRight(vector);
         }
-        for(Animal animal : this.animals){
-            this.lowerLeft = this.lowerLeft.lowerLeft(animal.getPosition());
-            this.upperRight = this.upperRight.upperRight(animal.getPosition());
+        for(Vector2d vector : this.animals.keySet()){
+            this.lowerLeft = this.lowerLeft.lowerLeft(vector);
+            this.upperRight = this.upperRight.upperRight(vector);
         }
     }
 
@@ -62,9 +59,9 @@ public class GrassField extends AbstractWorldMap {
         if (object instanceof Animal){
             return object;
         }
-        for (Grass grass : this.grassPositions){
-            if (grass.getPosition().equals(position)){
-                return grass;
+        for (Vector2d vector : this.grassPositions.keySet()){
+            if (vector.equals(position)){
+                return grassPositions.get(vector);
             }
         }
         return null;
