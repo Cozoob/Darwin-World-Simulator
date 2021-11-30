@@ -27,5 +27,7 @@ abstract class AbstractWorldMap implements IWorldMap{
         return null;
     }
 
-    public String toString(){return new MapVisualizer(this).draw(new Vector2d(0, 0), new Vector2d(4,4));}
+    // a canMoveTo się nie dało tu zaimplementować?
+
+    public String toString(){return new MapVisualizer(this).draw(new Vector2d(0, 0), new Vector2d(4,4));}   // ta metoda źle działa
 }

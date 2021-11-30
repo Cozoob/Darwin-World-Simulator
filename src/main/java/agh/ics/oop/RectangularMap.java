@@ -21,12 +21,12 @@ public class RectangularMap extends AbstractWorldMap{
     }
 
     private boolean isOnMap(Vector2d position){
-        return position.follows(new Vector2d(0,0)) && position.precedes(endCorner);
+        return position.follows(new Vector2d(0,0)) && position.precedes(endCorner); // nowy wektor co wywołanie
     }
 
     @Override
     public boolean canMoveTo(Vector2d position) {return isOnMap(position) && !isOccupied(position);}
 
     @Override
-    public String toString(){return new MapVisualizer(this).draw(new Vector2d(0, 0), endCorner);}
+    public String toString(){return new MapVisualizer(this).draw(new Vector2d(0, 0), endCorner);}   // patrz GrassField.toString
 }

@@ -56,7 +56,7 @@ public class GrassField extends AbstractWorldMap {
         }
     }
 
-    private boolean isOnMap(Vector2d position){return position.follows(new Vector2d(0,0));}
+    private boolean isOnMap(Vector2d position){return position.follows(new Vector2d(0,0));} // GrassField powinno być nieograniczone
 
     @Override
     public boolean canMoveTo(Vector2d position) {
@@ -68,7 +68,7 @@ public class GrassField extends AbstractWorldMap {
 
     @Override
     public Object objectAt(Vector2d position) {
-        Object object = super.objectAt(position);
+        Object object = super.objectAt(position);   // super.objectAt()
         if (object instanceof Animal){
             return object;
         }
@@ -81,8 +81,8 @@ public class GrassField extends AbstractWorldMap {
     }
 
     @Override
-    public String toString(){
+    public String toString(){   // tej metody nie powinno być - odziedziczone toString powinno załatwić sprawę
         findCorners();
-        return new MapVisualizer(this).draw(this.lowerLeft, this.upperRight);
+        return new MapVisualizer(this).draw(this.lowerLeft, this.upperRight);   // nowy obiekt co wywołanie
     }
 }

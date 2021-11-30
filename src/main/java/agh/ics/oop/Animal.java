@@ -6,10 +6,10 @@ public class Animal{
     private Vector2d position;
     private MapDirection mapDirection;
     private IWorldMap map;
-    private final static Vector2d downLeftCorner = new Vector2d(0,0);
+    private final static Vector2d downLeftCorner = new Vector2d(0,0);   // tego już nie powinno być
     private final static Vector2d upRightCorner = new Vector2d(4,4);
 
-    public Animal(){
+    public Animal(){    // tego tym bardziej
         mapDirection = MapDirection.NORTH;
         position = new Vector2d(2,2);
     }
@@ -33,7 +33,7 @@ public class Animal{
            case FORWARD -> {
                boolean isMoveTo = map.canMoveTo(this.position.add(this.mapDirection.toUnitVector()));
                if(isMoveTo){
-                    this.position = this.position.add(this.mapDirection.toUnitVector());
+                    this.position = this.position.add(this.mapDirection.toUnitVector());    // dwa razy wykonywana operacja
                }
            }
            case BACKWARD -> {
