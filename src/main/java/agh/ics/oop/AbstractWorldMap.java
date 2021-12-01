@@ -10,7 +10,7 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
              this.animals.put(animal.getPosition(), animal);
             return true;
         }
-        return false;
+        throw new IllegalArgumentException("\"" + animal.getPosition() + "\" field is invalid");
     }
 
     @Override

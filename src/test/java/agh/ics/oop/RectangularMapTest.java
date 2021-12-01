@@ -26,11 +26,20 @@ public class RectangularMapTest {
     @Test
     void place(){
         Assertions.assertTrue(map.place(new Animal(map, new Vector2d(0,0))));
-        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(15, 5))));
-        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(14, 6))));
-        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(-1, 2))));
-        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(-1, -1))));
-        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(1, -2))));
+        IllegalArgumentException thrown1 = Assertions.assertThrows(IllegalArgumentException.class, () -> map.place(new Animal(map, new Vector2d(15, 5))));
+        Assertions.assertEquals("\"(15,5)\" field is invalid", thrown1.getMessage());
+
+        IllegalArgumentException thrown2 = Assertions.assertThrows(IllegalArgumentException.class, () -> map.place(new Animal(map, new Vector2d(14, 6))));
+        Assertions.assertEquals("\"(14,6)\" field is invalid", thrown2.getMessage());
+
+        IllegalArgumentException thrown3 = Assertions.assertThrows(IllegalArgumentException.class, () -> map.place(new Animal(map, new Vector2d(-1, 2))));
+        Assertions.assertEquals("\"(-1,2)\" field is invalid", thrown3.getMessage());
+
+        IllegalArgumentException thrown4 = Assertions.assertThrows(IllegalArgumentException.class, () -> map.place(new Animal(map, new Vector2d(-1, -1))));
+        Assertions.assertEquals("\"(-1,-1)\" field is invalid", thrown4.getMessage());
+
+        IllegalArgumentException thrown5 = Assertions.assertThrows(IllegalArgumentException.class, () -> map.place(new Animal(map, new Vector2d(1, -2))));
+        Assertions.assertEquals("\"(1,-2)\" field is invalid", thrown5.getMessage());
     }
 
     @Test

@@ -9,7 +9,7 @@ public class AnimalTest {
 
     @Test
     public void testAnimal(){
-        Animal animal = new Animal();
+        Animal animal = new Animal(new RectangularMap(5,5));
         animal.move(MoveDirection.RIGHT);
         Assertions.assertEquals(MapDirection.EAST, animal.getMapDirection());
         animal.move(MoveDirection.RIGHT);
@@ -23,7 +23,7 @@ public class AnimalTest {
         animal.move(MoveDirection.BACKWARD);
         Assertions.assertEquals(MapDirection.SOUTH, animal.getMapDirection());
 
-        Animal animal1 = new Animal();
+        Animal animal1 = new Animal(new RectangularMap(5,5));
         animal1.move(MoveDirection.RIGHT);
         Assertions.assertEquals(animal1.getPosition(), new Vector2d(2, 2));
         animal1.move(MoveDirection.FORWARD);
@@ -44,7 +44,7 @@ public class AnimalTest {
         animal1.move(MoveDirection.BACKWARD);
         Assertions.assertNotEquals(animal1.getPosition(), new Vector2d(5,4));
 
-        Animal animal2 = new Animal();
+        Animal animal2 = new Animal(new RectangularMap(5,5));
         animal2.move(MoveDirection.LEFT); // 2,2
         animal2.move(MoveDirection.FORWARD); // 1,2
         animal2.move(MoveDirection.FORWARD); // 0, 2
@@ -62,14 +62,10 @@ public class AnimalTest {
         animal2.move(MoveDirection.FORWARD); // 0, 1
         Assertions.assertEquals(animal2.getPosition(), new Vector2d(0,1));
 
-        Animal animal3 = new Animal();
         String[] actions = {"forward","o" ,"f", "backward", "left","5", "%" ,"r", "l", "f"};
         OptionsParser parser = new OptionsParser();
-        ArrayList<MoveDirection> moves = parser.parse(actions);
-        for(MoveDirection move : moves){
-            animal3.move(move);
-        }
-        Assertions.assertEquals(animal3.getPosition(), new Vector2d(1, 3));
+        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> parser.parse(actions));
+        Assertions.assertEquals("\"o\" argument is not legal move specification.", thrown.getMessage());
 
     }
 

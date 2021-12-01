@@ -7,6 +7,7 @@ public class GrassField extends AbstractWorldMap {
     private final int upperBound;
     private Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
     private Vector2d upperRight = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
+    private MapBoundary boundary = new MapBoundary();
 
     public GrassField(int amountOfGrass){
         this.grassPositions = new LinkedHashMap<>();
@@ -27,6 +28,7 @@ public class GrassField extends AbstractWorldMap {
         } while (!canPutGrass(randomVector));
 
         this.grassPositions.put(randomVector, new Grass(randomVector));
+        // this.boundary.addPosition(randomVector); -- moge dodawac zeby wyswietlac takze wszystkie trawy
     }
 
     private boolean canPutGrass(Vector2d position){
@@ -39,15 +41,8 @@ public class GrassField extends AbstractWorldMap {
     }
 
     private void findCorners(){
-        // szukam wektorow lowerLeft oraz upperRight w grassPositions i animals
-        for (Vector2d vector : this.grassPositions.keySet()){
-            this.lowerLeft = this.lowerLeft.lowerLeft(vector);
-            this.upperRight = this.upperRight.upperRight(vector);
-        }
-        for(Vector2d vector : this.animals.keySet()){
-            this.lowerLeft = this.lowerLeft.lowerLeft(vector);
-            this.upperRight = this.upperRight.upperRight(vector);
-        }
+        upperRight = this.boundary.getNewUpperRight();
+        lowerLeft = this.boundary.getNewLowerLeft();
     }
 
     @Override
@@ -65,6 +60,20 @@ public class GrassField extends AbstractWorldMap {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean place(Animal animal){
+        super.place(animal);
+        this.boundary.addPosition(animal.getPosition());
+        return true; // zawsze true bo juz nigdy nie zwraca false - teraz wyrzuca wyjatkiem
+    }
+
+    @Override
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
+        super.positionChanged(oldPosition, newPosition);
+        this.boundary.positionChanged(oldPosition, newPosition);
+        findCorners();
     }
 
     @Override
