@@ -2,14 +2,17 @@ package agh.ics.oop;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class MapBoundary implements IPositionChangeObserver {
+// public class MapBoundary implements IPositionChangeObserver
+public class MapBoundary extends AbstractWorldMap {
     private final SortedSet<Vector2d> setSortedByX = new TreeSet<>(MapBoundary::compareOnXAxis);
     private final SortedSet<Vector2d> setSortedByY = new TreeSet<>(MapBoundary::compareOnYAxis);
 
     @Override
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition){
-        setSortedByX.remove(oldPosition);
-        setSortedByY.remove(oldPosition);
+        if(!isOccupied(oldPosition)) {
+            setSortedByX.remove(oldPosition);
+            setSortedByY.remove(oldPosition);
+        }
         setSortedByX.add(newPosition);
         setSortedByY.add(newPosition);
     }
@@ -23,7 +26,7 @@ public class MapBoundary implements IPositionChangeObserver {
     }
 
     public Vector2d getNewUpperRight(){
-        int x = this.setSortedByX.last().x + 1; // dodaje 1 jednostke zeby pokazalo sie troszke wiecej mapy
+        int x = this.setSortedByX.last().x + 1; // dodaje 1 jednostke zeby pokazalo sie troche wiecej mapy
         int y = this.setSortedByY.last().y + 1;
         return new Vector2d(x, y);
     }
@@ -37,5 +40,10 @@ public class MapBoundary implements IPositionChangeObserver {
     public void addPosition(Vector2d position){
         this.setSortedByX.add(position);
         this.setSortedByY.add(position);
+    }
+
+    @Override
+    public boolean canMoveTo(Vector2d position) {
+        return false;
     }
 }

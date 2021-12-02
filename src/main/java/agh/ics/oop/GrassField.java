@@ -28,7 +28,7 @@ public class GrassField extends AbstractWorldMap {
         } while (!canPutGrass(randomVector));
 
         this.grassPositions.put(randomVector, new Grass(randomVector));
-        // this.boundary.addPosition(randomVector); -- moge dodawac zeby wyswietlac takze wszystkie trawy
+        this.boundary.addPosition(randomVector); // -- moge dodawac zeby wyswietlac takze wszystkie trawy
     }
 
     private boolean canPutGrass(Vector2d position){
@@ -70,10 +70,9 @@ public class GrassField extends AbstractWorldMap {
     }
 
     @Override
-    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) { // niech tylko mapboundary to ma
         super.positionChanged(oldPosition, newPosition);
         this.boundary.positionChanged(oldPosition, newPosition);
-        findCorners();
     }
 
     @Override
