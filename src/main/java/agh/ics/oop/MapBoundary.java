@@ -3,13 +3,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 // public class MapBoundary implements IPositionChangeObserver
-public class MapBoundary extends AbstractWorldMap {
+public class MapBoundary implements IPositionChangeObserver {
     private final SortedSet<Vector2d> setSortedByX = new TreeSet<>(MapBoundary::compareOnXAxis);
     private final SortedSet<Vector2d> setSortedByY = new TreeSet<>(MapBoundary::compareOnYAxis);
+    private final IWorldMap map;
+
+    public MapBoundary(IWorldMap map){
+        this.map = map;
+    }
 
     @Override
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition){
-        if(!isOccupied(oldPosition)) {
+        if(!(map.objectAt(oldPosition) instanceof Grass)) {
             setSortedByX.remove(oldPosition);
             setSortedByY.remove(oldPosition);
         }
@@ -18,11 +23,15 @@ public class MapBoundary extends AbstractWorldMap {
     }
 
     private static int compareOnXAxis(Vector2d position1, Vector2d position2){
-        return Integer.compare(position1.x, position2.x);
+        if(position1.x>position2.x){return 1;}
+        else if(position1.x < position2.x) {return -1;}
+        return position1.y-position2.y;
     }
 
     private static int compareOnYAxis(Vector2d position1, Vector2d position2){
-        return Integer.compare(position1.y, position2.y);
+        if(position1.y>position2.y){return 1;}
+        else if(position1.y < position2.y) {return -1;}
+        return position1.x-position2.x;
     }
 
     public Vector2d getNewUpperRight(){
@@ -40,10 +49,5 @@ public class MapBoundary extends AbstractWorldMap {
     public void addPosition(Vector2d position){
         this.setSortedByX.add(position);
         this.setSortedByY.add(position);
-    }
-
-    @Override
-    public boolean canMoveTo(Vector2d position) {
-        return false;
     }
 }

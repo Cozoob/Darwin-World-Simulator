@@ -3,6 +3,8 @@ import java.util.LinkedHashMap;
 
 abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
     protected LinkedHashMap<Vector2d, Animal> animals = new LinkedHashMap<>();
+    protected Vector2d lowerLeft = new Vector2d(0, 0);
+    protected Vector2d upperRight = new Vector2d(4, 4);
 
     @Override
     public boolean place(Animal animal) {
@@ -24,7 +26,7 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
         return null;
     }
 
-    public String toString(){return new MapVisualizer(this).draw(new Vector2d(0, 0), new Vector2d(4,4));}
+    public String toString(){return new MapVisualizer(this).draw(this.lowerLeft, this.upperRight);}
 
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
         Animal animal = this.animals.get(oldPosition);

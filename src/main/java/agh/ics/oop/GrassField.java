@@ -7,12 +7,13 @@ public class GrassField extends AbstractWorldMap {
     private final int upperBound;
     private Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
     private Vector2d upperRight = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
-    private MapBoundary boundary = new MapBoundary();
+    private final MapBoundary boundary;
 
     public GrassField(int amountOfGrass){
         this.grassPositions = new LinkedHashMap<>();
         this.upperBound = (int)Math.sqrt(amountOfGrass*10) + 1;
         this.animals = new LinkedHashMap<>();
+        this.boundary = new MapBoundary(this);
         for (int i = 0; i < amountOfGrass; i++){
             putGrass();
         }
@@ -28,7 +29,7 @@ public class GrassField extends AbstractWorldMap {
         } while (!canPutGrass(randomVector));
 
         this.grassPositions.put(randomVector, new Grass(randomVector));
-        this.boundary.addPosition(randomVector); // -- moge dodawac zeby wyswietlac takze wszystkie trawy
+        this.boundary.addPosition(randomVector);
     }
 
     private boolean canPutGrass(Vector2d position){
@@ -66,11 +67,11 @@ public class GrassField extends AbstractWorldMap {
     public boolean place(Animal animal){
         super.place(animal);
         this.boundary.addPosition(animal.getPosition());
-        return true; // zawsze true bo juz nigdy nie zwraca false - teraz wyrzuca wyjatkiem
+        return true;
     }
 
     @Override
-    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) { // niech tylko mapboundary to ma
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
         super.positionChanged(oldPosition, newPosition);
         this.boundary.positionChanged(oldPosition, newPosition);
     }
