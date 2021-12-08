@@ -1,10 +1,14 @@
 package agh.ics.oop;
 import java.util.LinkedHashMap;
 
-abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
+public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
     protected LinkedHashMap<Vector2d, Animal> animals = new LinkedHashMap<>();
     protected Vector2d lowerLeft = new Vector2d(0, 0);
     protected Vector2d upperRight = new Vector2d(4, 4);
+
+    public AbstractWorldMap(){
+        animals = new LinkedHashMap<>();
+    }
 
     @Override
     public boolean place(Animal animal) {
@@ -33,4 +37,8 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
         this.animals.remove(oldPosition);
         this.animals.put(newPosition, animal);
     }
+
+    public Vector2d getLowerLeft(){return this.lowerLeft;}
+
+    public Vector2d getUpperRight(){return this.upperRight;}
 }

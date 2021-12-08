@@ -10,9 +10,9 @@ public class GrassField extends AbstractWorldMap {
     private final MapBoundary boundary;
 
     public GrassField(int amountOfGrass){
+        super();
         this.grassPositions = new LinkedHashMap<>();
         this.upperBound = (int)Math.sqrt(amountOfGrass*10) + 1;
-        this.animals = new LinkedHashMap<>();
         this.boundary = new MapBoundary(this);
         for (int i = 0; i < amountOfGrass; i++){
             putGrass();
@@ -81,4 +81,10 @@ public class GrassField extends AbstractWorldMap {
         findCorners();
         return new MapVisualizer(this).draw(this.lowerLeft, this.upperRight);
     }
+
+    @Override
+    public Vector2d getLowerLeft(){return this.lowerLeft;}
+
+    @Override
+    public Vector2d getUpperRight(){return this.upperRight;}
 }

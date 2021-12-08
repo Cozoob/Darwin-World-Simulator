@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import agh.ics.oop.gui.App;
+import javafx.application.Application;
 
 import static java.lang.System.out;
 
@@ -27,16 +29,18 @@ public class World {
 //        }
 
 
-        String[] moves = new String[] {"f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f"};
+//        String[] moves = new String[] {"f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f"};
         //        String[] moves = new String[] {"f", "b", "o"};
         try {
-            ArrayList<MoveDirection> directions = new OptionsParser().parse(moves);
-            IWorldMap map = new GrassField(10);
-            Vector2d[] positions = { new Vector2d(2,3), new Vector2d(3,4)};
-            IEngine engine = new SimulationEngine(directions, map, positions);
-            engine.run();
+            Application.launch(App.class, args);
+//            ArrayList<MoveDirection> directions = new OptionsParser().parse(moves);
+//            IWorldMap map = new GrassField(10);
+//            Vector2d[] positions = { new Vector2d(2,3), new Vector2d(3,4)};
+//            IEngine engine = new SimulationEngine(directions, map, positions);
+//            engine.run();
         } catch (IllegalArgumentException ex){
             out.println(ex.getMessage());
+            ex.printStackTrace();
             System.exit(1);
         }
 
