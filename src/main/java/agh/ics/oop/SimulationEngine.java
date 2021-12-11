@@ -1,32 +1,54 @@
 package agh.ics.oop;
 
+import agh.ics.oop.gui.App;
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.ArrayList;
 
-public class SimulationEngine implements IEngine{
+public class SimulationEngine extends Thread implements IEngine, Runnable{
     private IWorldMap map;
     private final List<Animal> animals = new ArrayList<Animal>();
-    private final List<MoveDirection> moves;
+    private List<MoveDirection> moves;
+    private int moveDelay = 1000;
 
     public SimulationEngine(List<MoveDirection> moves, IWorldMap map, Vector2d[] startedPositions) {
         this.moves = moves;
         this.map = map;
-        for(Vector2d position : startedPositions){
+        for (Vector2d position : startedPositions) {
             map.place(new Animal(map, position));
             this.animals.add((Animal) map.objectAt(position));
+//            (Animal) ((Animal) map.objectAt(position)).addObserver();
         }
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         System.out.println(map);
         int i = 0;
         int numberOfAnimals = this.animals.size();
+
         for (MoveDirection move : moves){
             this.animals.get(i % numberOfAnimals).move(move);
+            try {
+                Thread.sleep(moveDelay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             System.out.println(move);
             System.out.println(map);
             i++;
         }
+    }
+
+    public void setMoveDelay(int moveDelay) {
+        this.moveDelay = moveDelay;
+    }
+
+    public void setMoves(List<MoveDirection> moves) {
+        this.moves = moves;
     }
 }

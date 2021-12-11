@@ -1,5 +1,9 @@
 package agh.ics.oop;
 
+import agh.ics.oop.gui.App;
+
+import java.io.FileNotFoundException;
+
 /**
  * The interface responsible for managing the moves of the animals.
  * Assumes that Vector2d and MoveDirection classes are defined.

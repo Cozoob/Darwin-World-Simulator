@@ -41,4 +41,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public Vector2d getLowerLeft(){return this.lowerLeft;}
 
     public Vector2d getUpperRight(){return this.upperRight;}
+    
+    public LinkedHashMap<Vector2d, Animal> getAnimals(){return this.animals;}
+
+    public abstract LinkedHashMap<Vector2d, Grass> getGrass();
 }

@@ -6,7 +6,7 @@ public class OptionsParser {
 
 //    final private String[] moveOptions = new String[] {"f", "forward", "b", "backward", "l", "left", };
 
-    public ArrayList<MoveDirection> parse(String[] moves){
+    public static ArrayList<MoveDirection> parse(String[] moves){
         ArrayList<MoveDirection> result = new ArrayList<>();
 
         for(String move : moves){

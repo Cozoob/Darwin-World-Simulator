@@ -34,4 +34,9 @@ public class RectangularMap extends AbstractWorldMap{
 
     @Override
     public Vector2d getUpperRight(){return this.upperRight;}
+
+    @Override
+    public LinkedHashMap<Vector2d, Grass> getGrass() {
+        return null;
+    }
 }

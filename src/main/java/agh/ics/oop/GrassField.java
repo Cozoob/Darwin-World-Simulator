@@ -3,7 +3,7 @@ import java.util.*;
 import java.lang.Math;
 
 public class GrassField extends AbstractWorldMap {
-    private final LinkedHashMap<Vector2d, Grass> grassPositions;
+    public final LinkedHashMap<Vector2d, Grass> grassPositions;
     private final int upperBound;
     private Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
     private Vector2d upperRight = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
@@ -67,6 +67,7 @@ public class GrassField extends AbstractWorldMap {
     public boolean place(Animal animal){
         super.place(animal);
         this.boundary.addPosition(animal.getPosition());
+        findCorners();
         return true;
     }
 
@@ -87,4 +88,7 @@ public class GrassField extends AbstractWorldMap {
 
     @Override
     public Vector2d getUpperRight(){return this.upperRight;}
+
+    @Override
+    public LinkedHashMap<Vector2d, Grass> getGrass(){return this.grassPositions;}
 }

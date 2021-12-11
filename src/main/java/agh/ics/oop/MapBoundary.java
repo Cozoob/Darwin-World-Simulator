@@ -41,7 +41,7 @@ public class MapBoundary implements IPositionChangeObserver {
     }
 
     public Vector2d getNewLowerLeft(){
-        int x = this.setSortedByX.first().x - 1;
+        int x = this.setSortedByX.first().x - 1; // oddaje 1 jednostke zeby pokazalo sie troche wiecej mapy
         int y = this.setSortedByY.first().y - 1;
         return new Vector2d(x, y);
     }
