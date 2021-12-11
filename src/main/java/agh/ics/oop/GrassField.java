@@ -47,9 +47,6 @@ public class GrassField extends AbstractWorldMap {
     }
 
     @Override
-    public boolean canMoveTo(Vector2d position) { return !( objectAt(position) instanceof Animal);}
-
-    @Override
     public Object objectAt(Vector2d position) {
         Object object = super.objectAt(position);
         if (object instanceof Animal){
@@ -75,12 +72,6 @@ public class GrassField extends AbstractWorldMap {
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
         super.positionChanged(oldPosition, newPosition);
         this.boundary.positionChanged(oldPosition, newPosition);
-    }
-
-    @Override
-    public String toString(){
-        findCorners();
-        return new MapVisualizer(this).draw(this.lowerLeft, this.upperRight);
     }
 
     @Override

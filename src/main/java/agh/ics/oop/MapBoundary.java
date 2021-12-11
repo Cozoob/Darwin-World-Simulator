@@ -2,15 +2,12 @@ package agh.ics.oop;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-// public class MapBoundary implements IPositionChangeObserver
 public class MapBoundary implements IPositionChangeObserver {
     private final SortedSet<Vector2d> setSortedByX = new TreeSet<>(MapBoundary::compareOnXAxis);
     private final SortedSet<Vector2d> setSortedByY = new TreeSet<>(MapBoundary::compareOnYAxis);
     private final IWorldMap map;
 
-    public MapBoundary(IWorldMap map){
-        this.map = map;
-    }
+    public MapBoundary(IWorldMap map){this.map = map;}
 
     @Override
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition){
@@ -41,7 +38,7 @@ public class MapBoundary implements IPositionChangeObserver {
     }
 
     public Vector2d getNewLowerLeft(){
-        int x = this.setSortedByX.first().x - 1; // oddaje 1 jednostke zeby pokazalo sie troche wiecej mapy
+        int x = this.setSortedByX.first().x - 1; // usuwam 1 jednostke zeby pokazalo sie troche wiecej mapy
         int y = this.setSortedByY.first().y - 1;
         return new Vector2d(x, y);
     }

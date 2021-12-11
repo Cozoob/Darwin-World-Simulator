@@ -9,7 +9,7 @@ public class RectangularMap extends AbstractWorldMap{
     private final Vector2d lowerLeft = new Vector2d(0,0);
 
     public RectangularMap(int width, int height){
-        if (0 < width && 0 < height) {
+        if (0 < width || 0 < height) {
             this.width = width;
             this.height = height;
         }
@@ -27,16 +27,11 @@ public class RectangularMap extends AbstractWorldMap{
     public boolean canMoveTo(Vector2d position) {return isOnMap(position) && !isOccupied(position);}
 
     @Override
-    public String toString(){return new MapVisualizer(this).draw(lowerLeft, upperRight);}
-
-    @Override
     public Vector2d getLowerLeft(){return this.lowerLeft;}
 
     @Override
     public Vector2d getUpperRight(){return this.upperRight;}
 
     @Override
-    public LinkedHashMap<Vector2d, Grass> getGrass() {
-        return null;
-    }
+    public LinkedHashMap<Vector2d, Grass> getGrass() {return null;}
 }

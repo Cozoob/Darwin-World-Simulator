@@ -1,5 +1,7 @@
-package agh.ics.oop;
+package agh.ics.oop.gui;
 
+import agh.ics.oop.Animal;
+import agh.ics.oop.Grass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.image.Image;

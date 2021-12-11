@@ -1,16 +1,10 @@
 package agh.ics.oop;
 
-import agh.ics.oop.gui.App;
-import javafx.beans.Observable;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.ArrayList;
 
 public class SimulationEngine extends Thread implements IEngine, Runnable{
-    private IWorldMap map;
+    private final IWorldMap map;
     private final List<Animal> animals = new ArrayList<Animal>();
     private List<MoveDirection> moves;
     private int moveDelay = 1000;
@@ -21,13 +15,21 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
         for (Vector2d position : startedPositions) {
             map.place(new Animal(map, position));
             this.animals.add((Animal) map.objectAt(position));
-//            (Animal) ((Animal) map.objectAt(position)).addObserver();
+        }
+    }
+
+    public SimulationEngine(IWorldMap map, Vector2d[] startedPositions) {
+        this.moves = new ArrayList<>();
+        this.map = map;
+        for (Vector2d position : startedPositions) {
+            map.place(new Animal(map, position));
+            this.animals.add((Animal) map.objectAt(position));
         }
     }
 
     @Override
     public synchronized void run() {
-        System.out.println(map);
+//        System.out.println(map);
         int i = 0;
         int numberOfAnimals = this.animals.size();
 
@@ -38,17 +40,13 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println(move);
-            System.out.println(map);
+//            System.out.println(move);
+//            System.out.println(map);
             i++;
         }
     }
 
-    public void setMoveDelay(int moveDelay) {
-        this.moveDelay = moveDelay;
-    }
+    public void setMoveDelay(int moveDelay) {this.moveDelay = moveDelay;}
 
-    public void setMoves(List<MoveDirection> moves) {
-        this.moves = moves;
-    }
+    public void setMoves(List<MoveDirection> moves) {this.moves = moves;}
 }

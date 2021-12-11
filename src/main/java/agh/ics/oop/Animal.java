@@ -11,13 +11,13 @@ import java.util.ArrayList;
 public class Animal implements IMapElement{
     private Vector2d position;
     private MapDirection mapDirection;
-    private IWorldMap map;
+    private final IWorldMap map;
     private final ArrayList<IPositionChangeObserver> positionObservers = new ArrayList<>();
     private int width = 50;
     private int height = 70; // RATIO 5:7 -> WIDTH : HEIGHT
 
     public Animal(IWorldMap map){
-        this(map, new Vector2d(2,2)); //- tak mozesz wywolac drugi konstruktor -> po to by nie powielac kodu
+        this(map, new Vector2d(2,2));
     }
 
     public Animal(IWorldMap map, Vector2d initialPosition){
@@ -47,14 +47,12 @@ public class Animal implements IMapElement{
                boolean isMoveTo = map.canMoveTo(this.position.add(this.mapDirection.toUnitVector()));
                if(isMoveTo){
                     this.position = this.position.add(this.mapDirection.toUnitVector());
-//                   positionChanged(oldPosition);
                }
            }
            case BACKWARD -> {
                boolean isMoveTo = map.canMoveTo(this.position.add(this.mapDirection.toUnitVector().opposite()));
                if(isMoveTo){
                    this.position = this.position.add(this.mapDirection.toUnitVector().opposite());
-//                   positionChanged(oldPosition);
                }
            }
            case LEFT -> this.mapDirection = this.mapDirection.previous();
@@ -102,21 +100,13 @@ public class Animal implements IMapElement{
             imageView.setFitWidth(height);
         }
 
-//        imageView.setFitHeight(height);
-//        imageView.setFitWidth(width);
         return imageView;
     }
 
     @Override
-    public Label getLabel() {
-        return new Label(this.getPosition().toString());
-    }
+    public Label getLabel() {return new Label(this.getPosition().toString());}
 
-    public void setHeight(int height) {
-        this.height = height;
-    }
+    public void setHeight(int height) {this.height = height;}
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
+    public void setWidth(int width) {this.width = width;}
 }

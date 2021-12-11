@@ -29,7 +29,5 @@ public class Grass implements IMapElement{
     }
 
     @Override
-    public Label getLabel() {
-        return new Label(this.getPosition().toString());
-    }
+    public Label getLabel() {return new Label(this.getPosition().toString());}
 }
