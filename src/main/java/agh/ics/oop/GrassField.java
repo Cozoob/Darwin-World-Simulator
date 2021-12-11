@@ -71,6 +71,7 @@ public class GrassField extends AbstractWorldMap {
     @Override
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
         super.positionChanged(oldPosition, newPosition);
+        findCorners();
         this.boundary.positionChanged(oldPosition, newPosition);
     }
 

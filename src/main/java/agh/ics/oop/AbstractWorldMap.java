@@ -6,9 +6,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected Vector2d lowerLeft;
     protected Vector2d upperRight;
 
-    public AbstractWorldMap(){
-        animals = new LinkedHashMap<>();
-    }
+    public AbstractWorldMap(){animals = new LinkedHashMap<>();}
 
     @Override
     public boolean place(Animal animal) {

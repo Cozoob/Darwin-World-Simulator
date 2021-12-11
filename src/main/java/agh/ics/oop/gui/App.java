@@ -156,7 +156,7 @@ public class App extends Application implements IPositionChangeObserver{
     }
 
     private void clickOnButton(TextField textField) throws IllegalArgumentException{
-        out.println("New thread");
+//        out.println("New thread");
         String[] args = textField.getText().split("[\\s]");
         List<MoveDirection> moves = OptionsParser.parse(args);
         this.engine.setMoves(moves);
