@@ -15,19 +15,6 @@ public class WrappedMap extends AbstractWorldMap {
 
     @Override
     public boolean canMoveTo(Vector2d position) {
-        // firstly "wrap" the position if needed
-        if (position.x < 0) {
-            position.x = this.upperRight.x;
-        }
-        if (position.x > this.upperRight.x) {
-            position.x = this.lowerLeft.x;
-        }
-        if (position.y < 0) {
-            position.y = this.upperRight.y;
-        }
-        if (position.y > this.upperRight.y) {
-            position.y = this.lowerLeft.y;
-        }
-        return true;
+        return position.follows(this.lowerLeft) && position.precedes(this.upperRight);
     }
 }

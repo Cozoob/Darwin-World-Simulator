@@ -10,7 +10,6 @@ import agh.ics.oop.WorldElements.Vector2d;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.Random;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
     public LinkedHashMap<Vector2d, Grass> grassPositions; // protected
@@ -116,6 +115,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         }
     }
 
+
+    // mozna by bylo zrobic jedna metoda putGrassOn(i na czym....)
     private void putGrassOnJungle(){
         Collections.shuffle(this.freeJunglePositions);
         int index = this.freeJunglePositions.size() - 1;
@@ -136,9 +137,16 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     @Override
     public boolean place(Animal animal) {
-        if (canMoveTo(animal.getPosition())){
-             this.animals.put(animal.getPosition(), animal);
-            this.mapBoundary.addPosition(animal.getPosition());
+        Vector2d position = animal.getPosition();
+
+        if (!isOccupied(position)){ // dwa razy to samo sprawdza - w engine tez to sprawdzam wiec juz raczej nie trzeba tego
+            this.animals.put(position, animal);
+            this.mapBoundary.addPosition(position);
+            if(position.precedes(this.jungleUpperRight) && position.follows(this.jungleLowerLeft)){
+                this.freeJunglePositions.remove(position); // moze byc wolne?
+            } else {
+                this.freePrairiePositions.remove(position);
+            }
             return true;
         }
         throw new IllegalArgumentException("\"" + animal.getPosition() + "\" field is invalid");

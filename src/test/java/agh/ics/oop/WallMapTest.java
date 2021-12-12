@@ -1,17 +1,16 @@
 package agh.ics.oop;
 
-import agh.ics.oop.Interfaces.IWorldMap;
-import agh.ics.oop.Maps.GrassField;
+import agh.ics.oop.Maps.WallMap;
 import agh.ics.oop.WorldElements.Animal;
 import agh.ics.oop.WorldElements.Vector2d;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class GrassFieldTest {
+public class WallMapTest {
+    WallMap map;
     Animal animal1;
     Animal animal2;
-    IWorldMap map;
 
     @Test
     void objectAt(){
@@ -30,31 +29,24 @@ public class GrassFieldTest {
     @Test
     void place(){
         Assertions.assertTrue(map.place(new Animal(map, new Vector2d(0,0))));
-        Assertions.assertTrue(map.place(new Animal(map, new Vector2d(15, 5))));
+        Assertions.assertTrue(map.place(new Animal(map, new Vector2d(14, 14))));
         Assertions.assertTrue(map.place(new Animal(map, new Vector2d(14, 6))));
-        Assertions.assertTrue(map.place(new Animal(map, new Vector2d(-1, 2))));
-        Assertions.assertTrue(map.place(new Animal(map, new Vector2d(-1, -1))));
-        Assertions.assertTrue(map.place(new Animal(map, new Vector2d(1, -2))));
-    }
-
-    @Test
-    void canMoveTo(){
-        Assertions.assertTrue(map.canMoveTo(new Vector2d(2,3)));
-        Assertions.assertTrue(map.canMoveTo(new Vector2d(14,1)));
-        Assertions.assertFalse(map.canMoveTo(new Vector2d(2,2)));
-        Assertions.assertFalse(map.canMoveTo(new Vector2d(1,1)));
-        Assertions.assertTrue(map.canMoveTo(new Vector2d(-2,-2)));
-        Assertions.assertTrue(map.canMoveTo(new Vector2d(-2,2)));
-        Assertions.assertTrue(map.canMoveTo(new Vector2d(2,-2)));
-        Assertions.assertFalse(map.canMoveTo(new Vector2d(2,2)));
-        Assertions.assertTrue(map.canMoveTo(new Vector2d(16,2)));
-        Assertions.assertTrue(map.canMoveTo(new Vector2d(2,6)));
+//        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(-1, 2))));
+//        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(-1, -1))));
+//        Assertions.assertFalse(map.place(new Animal(map, new Vector2d(1, -2))));
     }
 
 
     @BeforeEach
     void setUp(){
-        map = new GrassField(20);
+        int days = 10;
+        int numberOfAnimals = 3;
+        int amountOfGrass = 2;
+        int width = 15;
+        int height = 15;
+        int jungleWidth = 5;
+        int jungleHeight = 5;
+        map = new WallMap(numberOfAnimals, amountOfGrass, width, height, jungleWidth, jungleHeight);
         animal1 = new Animal(map, new Vector2d(1, 1));
         animal2 = new Animal(map, new Vector2d(2, 2));
         map.place(animal1);

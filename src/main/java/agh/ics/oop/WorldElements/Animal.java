@@ -5,6 +5,7 @@ import agh.ics.oop.Interfaces.IPositionChangeObserver;
 import agh.ics.oop.Interfaces.IWorldMap;
 import agh.ics.oop.EnumClasses.MapDirection;
 import agh.ics.oop.EnumClasses.MoveDirection;
+import agh.ics.oop.Maps.WrappedMap;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,6 +13,8 @@ import javafx.scene.image.ImageView;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
 public class Animal implements IMapElement {
     private Vector2d position;
@@ -20,6 +23,9 @@ public class Animal implements IMapElement {
     private final ArrayList<IPositionChangeObserver> positionObservers = new ArrayList<>();
     private int width = 50;
     private int height = 70; // RATIO 5:7 -> WIDTH : HEIGHT
+    public int orientationValue = 0; // values: [0->45->90->...->360) because 360 becomes 0
+    public MoveDirection moveDirection; // dla testow - do usuniecia
+    public ArrayList<Integer> genotype = new ArrayList<>();
 
     public Animal(IWorldMap map){this(map, new Vector2d(2,2));}
 
@@ -27,6 +33,10 @@ public class Animal implements IMapElement {
         this.map = map;
         this.position = initialPosition;
         this.mapDirection = MapDirection.NORTH;
+        // narazie tworze tak geny ze kazdego jest po tyle samo
+        for(int i = 0; i < 8; i++){
+            this.genotype.add(i);
+        }
         if(map instanceof IPositionChangeObserver){
             addObserver((IPositionChangeObserver) map);
         }
@@ -38,30 +48,100 @@ public class Animal implements IMapElement {
     // getter
     public MapDirection getMapDirection() {return mapDirection;}
 
+    // setter na testy - do usuniecia
+    public void setMoveDirection(MoveDirection moveDirection) {this.moveDirection = moveDirection;}
+
     // getter
     public IWorldMap getMap() {return map;}
 
     public String toString(){return mapDirection.toString();}
 
-    public void move(MoveDirection direction) {
+    public void move() {
+        MoveDirection direction = this.moveDirection; // dla testow - do usuniecia
+//        MoveDirection direction = chooseNewDirection();
         Vector2d oldPosition = this.position;
-       switch (direction){
+        switch (direction){
            case FORWARD -> {
-               boolean isMoveTo = map.canMoveTo(this.position.add(this.mapDirection.toUnitVector()));
-               if(isMoveTo){
-                    this.position = this.position.add(this.mapDirection.toUnitVector());
+               Vector2d newPosition = this.position.add(this.mapDirection.toUnitVector());
+               boolean canMoveTo = map.canMoveTo(newPosition);
+
+               if(!canMoveTo && map instanceof WrappedMap){
+                   // "wrap" the position if needed
+                   Vector2d wrappedPosition = wrapPosition(newPosition);
+                   newPosition.x = wrappedPosition.x;
+                   newPosition.y = wrappedPosition.y;
+                   canMoveTo = true;
+               }
+
+               if(canMoveTo){
+                    this.position = newPosition;
                }
            }
            case BACKWARD -> {
-               boolean isMoveTo = map.canMoveTo(this.position.add(this.mapDirection.toUnitVector().opposite()));
-               if(isMoveTo){
-                   this.position = this.position.add(this.mapDirection.toUnitVector().opposite());
+               Vector2d newPosition = this.position.add(this.mapDirection.toUnitVector().opposite());
+               System.out.println(newPosition);
+               boolean canMoveTo = map.canMoveTo(this.position.add(newPosition));
+
+               if(!canMoveTo && map instanceof WrappedMap){
+                   // "wrap" the position if needed
+                   Vector2d wrappedPosition = wrapPosition(newPosition);
+                   newPosition.x = wrappedPosition.x;
+                   newPosition.y = wrappedPosition.y;
+                   canMoveTo = true;
+               }
+
+               if(canMoveTo){
+                   System.out.println(newPosition);
+                   this.position = newPosition;
                }
            }
-           case LEFT -> this.mapDirection = this.mapDirection.previous();
-           case RIGHT -> this.mapDirection = this.mapDirection.next();
-       }
+
+           case FORWARDLEFT -> this.mapDirection = this.mapDirection.previous();
+           case LEFT -> this.mapDirection = this.mapDirection.previous().previous();
+           case BACKWARDLEFT -> this.mapDirection = this.mapDirection.previous().previous().previous();
+
+           case FORWARDRIGHT -> this.mapDirection = this.mapDirection.next();
+           case RIGHT -> this.mapDirection = this.mapDirection.next().next();
+           case BACKWARDRIGHT -> this.mapDirection = this.mapDirection.next().next().next();
+        }
         positionChanged(oldPosition);
+    }
+
+    private Vector2d wrapPosition(Vector2d newPosition){
+        Vector2d upperRight = ((WrappedMap) map).getUpperRight();
+        Vector2d lowerLeft = ((WrappedMap) map).getLowerLeft();
+        if (newPosition.x < lowerLeft.x) {
+            newPosition.x = upperRight.x;
+        }
+        if (newPosition.x > upperRight.x) {
+            newPosition.x = lowerLeft.x;
+        }
+        if (newPosition.y < lowerLeft.y) {
+            newPosition.y = upperRight.y;
+        }
+        if (newPosition.y > upperRight.y) {
+            newPosition.y = lowerLeft.y;
+        }
+        return newPosition;
+    }
+
+    // jesli dobrze rozumiem zwierze nie wykonuje obrotu o 0 stopni ani o 180... gdy jest gen 0 lub 4
+    // (odpowiednio 0 lub 180 stopni) to zwierze albo idzie do przodu albo do tylu
+    private MoveDirection chooseNewDirection(){
+        Collections.shuffle(this.genotype);
+        int gene = this.genotype.get(0) * 45; // choose the random (because of the previous shuffle) gene [degrees]
+
+        switch (gene){
+            case 0 -> {return MoveDirection.FORWARD;}
+            case 45 -> {return MoveDirection.FORWARDRIGHT;}
+            case 90 -> {return MoveDirection.RIGHT;}
+            case 135 -> {return MoveDirection.BACKWARDRIGHT;}
+            case 180 -> {return MoveDirection.BACKWARD;}
+            case 225 -> {return MoveDirection.BACKWARDLEFT;}
+            case 270 -> {return MoveDirection.LEFT;}
+            case 315 -> {return MoveDirection.FORWARDLEFT;}
+            default -> {return MoveDirection.BACKWARD;} // tutaj wyrzuc wyjatkiem!
+        }
     }
 
     public void addObserver(IPositionChangeObserver observer){this.positionObservers.add(observer);}
@@ -85,15 +165,21 @@ public class Animal implements IMapElement {
 
         switch(this.getMapDirection()){
             case NORTH -> url = "src/main/resources/animal/icon-north.png";
-            case SOUTH -> url = "src/main/resources/animal/icon-south.png";
+            case NORTHEAST -> url = "src/main/resources/animal/icon-northeast.png";
             case EAST -> url = "src/main/resources/animal/icon-east.png";
+            case SOUTHEAST -> url = "src/main/resources/animal/icon-southeast.png";
+            case SOUTH -> url = "src/main/resources/animal/icon-south.png";
+            case SOUTHWEST ->  url = "src/main/resources/animal/icon-southwest.png";
             case WEST -> url = "src/main/resources/animal/icon-west.png";
+            case NORTHWEST ->  url = "src/main/resources/animal/icon-northwest.png";
             default -> throw new IllegalStateException("Unexpected value: " + this.getMapDirection());
         }
 
 
         Image image = new Image(new FileInputStream(url));
 
+        // musze zmienic tak zeby kazde zdjecie mialo ten sam rozmiar...
+        // wtedy nie bedzie problemu ze skalowaniem tego animala
         ImageView imageView = new ImageView(image);
         if (this.getMapDirection().equals(MapDirection.NORTH) || this.getMapDirection().equals(MapDirection.SOUTH)){
             imageView.setFitHeight(height);

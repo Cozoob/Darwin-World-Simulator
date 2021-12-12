@@ -16,18 +16,18 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
     private List<Animal> animals = new ArrayList<>();
     private List<MoveDirection> moves;
     private int moveDelay = 1000;
+    public int days;
 
-    public SimulationEngine(List<MoveDirection> moves, AbstractWorldMap map) {
-        this.moves = moves; // do usuniecia i zmiany - tutaj powinienem losowac moves z genotypu danego zwierzaka
+    public SimulationEngine(AbstractWorldMap map, int days) {
         this.map = map;
+        this.days = days - 1;
         // choose random positions of the animals
         int i = 0;
-        while(i < map.numberOfAnimals){
+        while(i < map.numberOfAnimals && map.freePrairiePositions.size() > 0 && map.freeJunglePositions.size() > 0){
             Random rand = new Random();
 //        Random rand = new Random(103); // - do testow
             Vector2d randomVector = new Vector2d(rand.nextInt(map.getUpperRight().x), rand.nextInt(map.getUpperRight().y));
             if(!map.isOccupied(randomVector)){
-                // place the animal
                 i++;
                 Animal animal = new Animal(map, randomVector);
                 map.place(animal);
@@ -39,20 +39,15 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
 
     @Override
     public synchronized void run() {
-//        System.out.println(map);
-        int i = 0;
-        int numberOfAnimals = this.animals.size(); // lub: map.numberOfAnimals
+        System.out.println(map);
 
-        for (MoveDirection move : moves){
-            this.animals.get(i % numberOfAnimals).move(move);
-            try {
-                Thread.sleep(moveDelay);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        for (int day = 0; day <= this.days; day++){
+            for(Animal animal : this.animals){
+                // kazdy wykonuje losowany z genow jego ruch po mapie
+                animal.move();
+                System.out.println(animal.getMapDirection());
             }
-//            System.out.println(move);
-//            System.out.println(map);
-            i++;
+            System.out.println(map);
         }
     }
 
