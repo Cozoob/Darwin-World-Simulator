@@ -1,70 +1,41 @@
 package agh.ics.oop;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import agh.ics.oop.gui.App;
+import agh.ics.oop.AbstractClasses.AbstractWorldMap;
+import agh.ics.oop.Engine.SimulationEngine;
+import agh.ics.oop.Gui.App;
+import agh.ics.oop.Interfaces.IWorldMap;
+import agh.ics.oop.Maps.WallMap;
+import agh.ics.oop.Maps.WrappedMap;
 import javafx.application.Application;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 import static java.lang.System.out;
 
 public class World {
 
     public static void main(String[] args) {
-//        String[] moves = new String[] {"f", "b", "r", "l", "r", "f", "b", "b", "l"};
-
-//        String[] moves = new String[] {"f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f"};
-////        String[] moves = new String[] {"f", "b", "o"};
-//        try {
-//            ArrayList<MoveDirection> directions = new OptionsParser().parse(moves);
-//            IWorldMap map = new GrassField(10);
-////            Vector2d[] positions = { new Vector2d(2,3), new Vector2d(3,4)};
-//            Vector2d[] positions = { new Vector2d(2,3), new Vector2d(2,3)};
-//            IEngine engine = new SimulationEngine(directions, map, positions);
-//            engine.run();
-//        } catch (IllegalArgumentException ex){
-//            out.println(ex.getMessage());
-//            System.exit(1);
-//        }
-
-
-//        String[] moves = new String[] {"f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f", "b", "f"};
-        //        String[] moves = new String[] {"f", "b", "o"};
-        try {
-            Application.launch(App.class, args);
-//            ArrayList<MoveDirection> directions = new OptionsParser().parse(moves);
-//            IWorldMap map = new GrassField(10);
-//            Vector2d[] positions = { new Vector2d(2,3), new Vector2d(3,4)};
-//            IEngine engine = new SimulationEngine(directions, map, positions);
-//            engine.run();
-        } catch (IllegalArgumentException ex){
-            out.println(ex.getMessage());
-            ex.printStackTrace();
-            System.exit(1);
-        }
-
-
-//        ArrayList<MoveDirection> directions = new OptionsParser().parse(args);
-//        IWorldMap map = new RectangularMap(10, 5);
-//        Vector2d[] positions = { new Vector2d(2,2), new Vector2d(3,4) };
-//        IEngine engine = new SimulationEngine(directions, map, positions);
-//        engine.run();
-
-//        ArrayList<Grass> grassPositions = new ArrayList<Grass>();
-//        grassPositions.add(new Grass(new Vector2d(0,0)));
-//        grassPositions.add(new Grass(new Vector2d(3,0)));
-//        grassPositions.add(new Grass(new Vector2d(3,3)));
-//        grassPositions.add(new Grass(new Vector2d(-1,0)));
-//        grassPositions.add(new Grass(new Vector2d(3,-4)));
+//        String[] moves = new String[] {"f", "b", "o"};
 //
-//        Vector2d lowerLeft = grassPositions.get(0).position;
-//        Vector2d upperRight = grassPositions.get(0).position;
-//        for (Grass grass : grassPositions){
-//            lowerLeft = lowerLeft.lowerLeft(grass.position);
-//            upperRight = upperRight.upperRight(grass.position);
-//        }
-//        out.println(lowerLeft);
-//        out.println(upperRight);
+        int numberOfAnimals = 3;
+        int amountOfGrass = 2;
+        int width = 20;
+        int height = 20;
+        int jungleWidth = 0;
+        int jungleHeight = 0;
+//        WallMap wallMap = new WallMap(numberOfAnimals, amountOfGrass, width, height, jungleWidth, jungleHeight);
+//        out.println("WALLMAP");
+//        out.println(wallMap);
+//        out.println(wallMap.freeJunglePositions.size());
+//        out.println(wallMap.freePrairiePositions.size());
+//        out.println(wallMap.firstHalfOfGrass);
+//        out.println(wallMap.secondHalfOfGrass);
+//        out.println(wallMap.jungleLowerLeft);
+//        out.println(wallMap.jungleUpperRight);
+
+//        out.println("WRAPPEDMAP");
+//        WrappedMap wrappedMap = new WrappedMap(numberOfAnimals, amountOfGrass, width, height, jungleWidth, jungleHeight);
+
     }
 }

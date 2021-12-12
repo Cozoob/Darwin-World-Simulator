@@ -1,5 +1,9 @@
 package agh.ics.oop;
 
+import agh.ics.oop.Interfaces.IWorldMap;
+import agh.ics.oop.Maps.GrassField;
+import agh.ics.oop.WorldElements.Animal;
+import agh.ics.oop.WorldElements.Vector2d;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

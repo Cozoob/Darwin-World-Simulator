@@ -1,5 +1,6 @@
 package agh.ics.oop;
 
+import agh.ics.oop.WorldElements.Vector2d;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 

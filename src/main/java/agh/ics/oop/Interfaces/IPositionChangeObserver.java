@@ -1,4 +1,6 @@
-package agh.ics.oop;
+package agh.ics.oop.Interfaces;
+
+import agh.ics.oop.WorldElements.Vector2d;
 
 import java.io.FileNotFoundException;
 

@@ -1,8 +1,4 @@
-package agh.ics.oop;
-
-import agh.ics.oop.gui.App;
-
-import java.io.FileNotFoundException;
+package agh.ics.oop.Interfaces;
 
 /**
  * The interface responsible for managing the moves of the animals.

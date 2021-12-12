@@ -1,9 +1,8 @@
 package agh.ics.oop;
 
+import agh.ics.oop.EnumClasses.MapDirection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-
-import java.util.Map;
 
 public class MapDirectionTest {
 

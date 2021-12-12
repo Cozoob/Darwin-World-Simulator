@@ -1,5 +1,6 @@
-package agh.ics.oop;
+package agh.ics.oop.WorldElements;
 
+import agh.ics.oop.Interfaces.IMapElement;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -7,7 +8,7 @@ import javafx.scene.image.ImageView;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-public class Grass implements IMapElement{
+public class Grass implements IMapElement {
     private final Vector2d position;
 
     public Grass(Vector2d position){this.position = position;}

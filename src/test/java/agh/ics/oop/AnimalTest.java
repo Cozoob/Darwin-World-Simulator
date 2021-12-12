@@ -1,9 +1,13 @@
 package agh.ics.oop;
 
+import agh.ics.oop.Engine.OptionsParser;
+import agh.ics.oop.EnumClasses.MapDirection;
+import agh.ics.oop.EnumClasses.MoveDirection;
+import agh.ics.oop.Maps.RectangularMap;
+import agh.ics.oop.WorldElements.Animal;
+import agh.ics.oop.WorldElements.Vector2d;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-
-import java.util.ArrayList;
 
 public class AnimalTest {
 

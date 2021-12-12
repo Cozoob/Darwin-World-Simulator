@@ -1,7 +1,14 @@
-package agh.ics.oop.gui;
+package agh.ics.oop.Gui;
 
-import agh.ics.oop.*;
-
+import agh.ics.oop.AbstractClasses.AbstractWorldMap;
+import agh.ics.oop.Engine.OptionsParser;
+import agh.ics.oop.Engine.SimulationEngine;
+import agh.ics.oop.EnumClasses.MoveDirection;
+import agh.ics.oop.Interfaces.IPositionChangeObserver;
+import agh.ics.oop.Maps.WallMap;
+import agh.ics.oop.WorldElements.Animal;
+import agh.ics.oop.WorldElements.Grass;
+import agh.ics.oop.WorldElements.Vector2d;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -15,10 +22,9 @@ import javafx.event.ActionEvent;
 
 import java.io.FileNotFoundException;
 import java.util.*;
-import static java.lang.System.out;
 
 
-public class App extends Application implements IPositionChangeObserver{
+public class App extends Application implements IPositionChangeObserver {
     MoveDirection[] directions;
     String[] args;
     Vector2d[] positions;
@@ -61,7 +67,7 @@ public class App extends Application implements IPositionChangeObserver{
 
         GridPane grid = new GridPane();
 
-        stackPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
+        stackPane.minWidthProperty().bind(Bindings.createDoubleBinding( () ->
                 scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()));
         grid.getChildren().add(stackPane);
 
@@ -85,10 +91,10 @@ public class App extends Application implements IPositionChangeObserver{
         positions = new Vector2d[] {new Vector2d(0,0), new Vector2d(1,1)};
         new OptionsParser();
         directions = OptionsParser.parse(args).toArray(new MoveDirection[0]);
-        map = new GrassField(5);
+        //map = new GrassField(5);
         // map = new RectangularMap(5, 5);
-        engine = new SimulationEngine(List.of(directions), map, positions);
-        engine.setMoveDelay(500); // optional[ms] - 1000ms is the default option
+        //engine = new SimulationEngine(List.of(directions), map, positions);
+        //engine.setMoveDelay(500); // optional[ms] - 1000ms is the default option
     }
 
     public void drawGrid() throws FileNotFoundException {

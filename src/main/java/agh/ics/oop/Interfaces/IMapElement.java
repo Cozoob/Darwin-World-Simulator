@@ -1,4 +1,4 @@
-package agh.ics.oop;
+package agh.ics.oop.Interfaces;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 

@@ -1,4 +1,9 @@
-package agh.ics.oop;
+package agh.ics.oop.Engine;
+import agh.ics.oop.Interfaces.IPositionChangeObserver;
+import agh.ics.oop.Interfaces.IWorldMap;
+import agh.ics.oop.WorldElements.Grass;
+import agh.ics.oop.WorldElements.Vector2d;
+
 import java.util.SortedSet;
 import java.util.TreeSet;
 
