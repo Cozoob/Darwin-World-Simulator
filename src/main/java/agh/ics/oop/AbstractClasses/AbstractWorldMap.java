@@ -62,13 +62,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         // first half in jungle
         for (int i = 0; i < firstHalfOfGrass; i++){
             if(this.freeJunglePositions.size() > 0) {
-                putGrassOnJungle(grassEnergy);
+                putGrassOnJungle();
             }
         }
         // second half in prairie (outside the jungle)
         for (int i = 0; i < secondHalfOfGrass; i++){
             if(this.freePrairiePositions.size() > 0) {
-                putGrassOnPrairie(grassEnergy);
+                putGrassOnPrairie();
             }
         }
 
@@ -83,23 +83,23 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
 
     // mozna by bylo zrobic jedna metoda putGrassOn(i na czym....)
-    private void putGrassOnJungle(int grassEnergy){
+    public void putGrassOnJungle(){
         Collections.shuffle(this.freeJunglePositions, this.rand); // do testow tylko
 //        Collections.shuffle(this.freeJunglePositions);
         int index = this.freeJunglePositions.size() - 1;
         Vector2d randomVector = this.freeJunglePositions.get(index);
         this.freeJunglePositions.remove(index);
-        this.grassPositions.put(randomVector, new Grass(randomVector, grassEnergy));
+        this.grassPositions.put(randomVector, new Grass(randomVector, this.grassEnergy));
         this.mapBoundary.addPosition(randomVector);
     }
 
-    private void putGrassOnPrairie(int grassEnergy){
+    public void putGrassOnPrairie(){
         Collections.shuffle(this.freePrairiePositions, this.rand); // do testow tylko
 //        Collections.shuffle(this.freePrairiePositions);
         int index = this.freePrairiePositions.size() - 1;
         Vector2d randomVector = this.freePrairiePositions.get(index);
         this.freePrairiePositions.remove(index);
-        this.grassPositions.put(randomVector, new Grass(randomVector, grassEnergy));
+        this.grassPositions.put(randomVector, new Grass(randomVector, this.grassEnergy));
         this.mapBoundary.addPosition(randomVector);
     }
 
@@ -181,31 +181,39 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void updateListOfAnimals(Animal animal, Vector2d oldPosition){
         removeMovedAnimal(animal, oldPosition);
         addMovedAnimal(animal, animal.getPosition());
+        updateFreePositions(oldPosition, animal.getPosition());
     }
 
-    public void eatGrass(){
+    public void animalsEatGrass(){
+        ArrayList<Vector2d> grassToRemove = new ArrayList<>();
         for(Grass grass : this.grassPositions.values()){
-            TreeSet<Animal> treeAnimal = this.animals.get(grass.getPosition());
-            if(treeAnimal.size() > 0){
-                // choose the strongest animals that eat this grass
-                ArrayList<Animal> strongestAnimals = new ArrayList<>();
-                int biggestEnergy = treeAnimal.first().energy;
-                for(Animal animal : treeAnimal){
-                    if(animal.energy == biggestEnergy){
-                        strongestAnimals.add(animal);
-                    } else {
-                        break;
+            Vector2d grassPosition = grass.getPosition();
+            if(this.animals.containsKey(grassPosition)) {
+                TreeSet<Animal> treeAnimal = this.animals.get(grassPosition);
+                if (treeAnimal.size() > 0) {
+                    // choose the strongest animals that eat this grass
+                    ArrayList<Animal> strongestAnimals = new ArrayList<>();
+                    int biggestEnergy = treeAnimal.first().energy;
+                    for (Animal animal : treeAnimal) {
+                        if (animal.energy == biggestEnergy) {
+                            strongestAnimals.add(animal);
+                        } else {
+                            break;
+                        }
+                    }
+
+                    // divide grass energy for each animal from the strongest ones
+                    int dividedEnergy = (int) Math.floor((double) this.grassEnergy / strongestAnimals.size());
+                    for (Animal animal : strongestAnimals) {
+                        animal.addEnergy(dividedEnergy);
                     }
                 }
-
-                // divide grass energy for each animal from the strongest ones
-                int dividedEnergy = (int) Math.floor((double) this.grassEnergy / strongestAnimals.size());
-                for(Animal animal : strongestAnimals){
-                    animal.addEnergy(dividedEnergy);
-                }
+                grassToRemove.add(grassPosition);
             }
         }
-
+        for(Vector2d position : grassToRemove){
+            this.grassPositions.remove(position);
+        }
     }
 
     public void removeDeadAnimal(Animal animal){
@@ -291,9 +299,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         if(animal1.equals(animal2)){
             return 0;
         } else if(animal1.energy >= animal2.energy) {
-            return 1;
+            return -1;
         }
-        return -1;
+        return 1;
     }
 
     public ArrayList<Animal> getAliveAnimals() {

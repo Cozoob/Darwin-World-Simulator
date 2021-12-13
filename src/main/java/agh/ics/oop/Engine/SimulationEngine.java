@@ -47,9 +47,13 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
             }
             // teraz trzeba sprawdzic czy sa animalse ktore stoja na jakiejs trawie jesli tak to je ja
             // najsilniejszy (inne rozstrzyganie remisow pozniej dodaj)
-            this.map.eatGrass();
+            this.map.animalsEatGrass();
             // trzeba tez sprawdzic czy sa zwierzaki na dwoch tych samych pozycjach jesli tak to kupuluje
             // dwojka najsilniejszych
+
+            // pod koniec kazdego dnia trzeba tez wlozyc nowa trawe na mape
+            map.putGrassOnJungle();
+            map.putGrassOnPrairie();
             System.out.println(map);
         }
     }
