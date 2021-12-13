@@ -1,5 +1,6 @@
 package agh.ics.oop.WorldElements;
 
+import agh.ics.oop.AbstractClasses.AbstractWorldMap;
 import agh.ics.oop.Interfaces.IMapElement;
 import agh.ics.oop.Interfaces.IPositionChangeObserver;
 import agh.ics.oop.Interfaces.IWorldMap;
@@ -19,27 +20,28 @@ import java.util.Map;
 public class Animal implements IMapElement {
     private Vector2d position;
     private MapDirection mapDirection;
-    private final IWorldMap map;
+    private final AbstractWorldMap map;
     private final ArrayList<IPositionChangeObserver> positionObservers = new ArrayList<>();
     private int width = 50;
     private int height = 70; // RATIO 5:7 -> WIDTH : HEIGHT
+    public int energy; // private
     public int orientationValue = 0; // values: [0->45->90->...->360) because 360 becomes 0
     public MoveDirection moveDirection; // dla testow - do usuniecia
     public ArrayList<Integer> genotype = new ArrayList<>();
+    public boolean isAlive = true; // protected
 
-    public Animal(IWorldMap map){this(map, new Vector2d(2,2));}
+//    public Animal(IWorldMap map){this(map, new Vector2d(2,2));}
 
-    public Animal(IWorldMap map, Vector2d initialPosition){
+    public Animal(AbstractWorldMap map, Vector2d initialPosition, int energy){
         this.map = map;
         this.position = initialPosition;
+        this.energy = energy;
         this.mapDirection = MapDirection.NORTH;
         // narazie tworze tak geny ze kazdego jest po tyle samo
         for(int i = 0; i < 8; i++){
             this.genotype.add(i);
         }
-        if(map instanceof IPositionChangeObserver){
-            addObserver((IPositionChangeObserver) map);
-        }
+        addObserver(map);
     }
 
     // getter
@@ -56,14 +58,33 @@ public class Animal implements IMapElement {
 
     public String toString(){return mapDirection.toString();}
 
+    public void addEnergy(int energy){this.energy = Math.min(this.energy + energy, this.map.maxAnimalEnergy);}
+
+    public void removeEnergy(int energy) {
+        this.energy = Math.max(this.energy - energy, 0);
+        if(this.energy == 0){
+            this.isAlive = false;
+        }
+    }
+
     public void move() {
+        if(!isAlive){
+            return;
+        }
+        removeEnergy(1); // each day is minus 1 energy for the animal
+        if(!isAlive) {
+            map.removeDeadAnimal(this);
+            return;
+        }
+
+        boolean canMoveTo = false;
         MoveDirection direction = this.moveDirection; // dla testow - do usuniecia
 //        MoveDirection direction = chooseNewDirection();
         Vector2d oldPosition = this.position;
         switch (direction){
            case FORWARD -> {
                Vector2d newPosition = this.position.add(this.mapDirection.toUnitVector());
-               boolean canMoveTo = map.canMoveTo(newPosition);
+               canMoveTo = map.canMoveTo(newPosition);
 
                if(!canMoveTo && map instanceof WrappedMap){
                    // "wrap" the position if needed
@@ -75,12 +96,14 @@ public class Animal implements IMapElement {
 
                if(canMoveTo){
                     this.position = newPosition;
+//                    map.removeMovedAnimal(this, oldPosition);
+//                    map.addMovedAnimal(this, newPosition);
                }
            }
            case BACKWARD -> {
                Vector2d newPosition = this.position.add(this.mapDirection.toUnitVector().opposite());
                System.out.println(newPosition);
-               boolean canMoveTo = map.canMoveTo(this.position.add(newPosition));
+               canMoveTo = map.canMoveTo(this.position.add(newPosition));
 
                if(!canMoveTo && map instanceof WrappedMap){
                    // "wrap" the position if needed
@@ -91,7 +114,7 @@ public class Animal implements IMapElement {
                }
 
                if(canMoveTo){
-                   System.out.println(newPosition);
+//                   System.out.println(newPosition);
                    this.position = newPosition;
                }
            }
@@ -105,11 +128,16 @@ public class Animal implements IMapElement {
            case BACKWARDRIGHT -> this.mapDirection = this.mapDirection.next().next().next();
         }
         positionChanged(oldPosition);
+        if(canMoveTo && this.energy > 0){
+            // it means it has moved
+            this.map.updateFreePositions(oldPosition, this.getPosition());
+            this.map.updateListOfAnimals(this, oldPosition);
+        }
     }
 
     private Vector2d wrapPosition(Vector2d newPosition){
-        Vector2d upperRight = ((WrappedMap) map).getUpperRight();
-        Vector2d lowerLeft = ((WrappedMap) map).getLowerLeft();
+        Vector2d upperRight = map.getUpperRight();
+        Vector2d lowerLeft = map.getLowerLeft();
         if (newPosition.x < lowerLeft.x) {
             newPosition.x = upperRight.x;
         }
@@ -151,7 +179,7 @@ public class Animal implements IMapElement {
     private void positionChanged(Vector2d oldPosition){
         for (IPositionChangeObserver observer : positionObservers){
             try {
-                observer.positionChanged(oldPosition, this.position);
+                observer.positionChanged(oldPosition, this.position, this);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

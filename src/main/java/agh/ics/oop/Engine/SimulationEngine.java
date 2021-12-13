@@ -13,7 +13,6 @@ import java.util.Random;
 
 public class SimulationEngine extends Thread implements IEngine, Runnable{
     private AbstractWorldMap map;
-    private List<Animal> animals = new ArrayList<>();
     private List<MoveDirection> moves;
     private int moveDelay = 1000;
     public int days;
@@ -29,9 +28,8 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
             Vector2d randomVector = new Vector2d(rand.nextInt(map.getUpperRight().x), rand.nextInt(map.getUpperRight().y));
             if(!map.isOccupied(randomVector)){
                 i++;
-                Animal animal = new Animal(map, randomVector);
+                Animal animal = new Animal(map, randomVector, map.grassEnergy);
                 map.place(animal);
-                this.animals.add(animal);
             }
         }
     }
@@ -42,11 +40,16 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
         System.out.println(map);
 
         for (int day = 0; day <= this.days; day++){
-            for(Animal animal : this.animals){
+            for(Animal animal : map.getAliveAnimals()){
                 // kazdy wykonuje losowany z genow jego ruch po mapie
-                animal.move();
+                animal.move(); // dodatkowo jest usuwane zwierze z mapy jesli umarlo
                 System.out.println(animal.getMapDirection());
             }
+            // teraz trzeba sprawdzic czy sa animalse ktore stoja na jakiejs trawie jesli tak to je ja
+            // najsilniejszy (inne rozstrzyganie remisow pozniej dodaj)
+            this.map.eatGrass();
+            // trzeba tez sprawdzic czy sa zwierzaki na dwoch tych samych pozycjach jesli tak to kupuluje
+            // dwojka najsilniejszych
             System.out.println(map);
         }
     }

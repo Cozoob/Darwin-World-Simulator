@@ -1,6 +1,7 @@
 package agh.ics.oop.Engine;
 import agh.ics.oop.Interfaces.IPositionChangeObserver;
 import agh.ics.oop.Interfaces.IWorldMap;
+import agh.ics.oop.WorldElements.Animal;
 import agh.ics.oop.WorldElements.Grass;
 import agh.ics.oop.WorldElements.Vector2d;
 
@@ -15,7 +16,7 @@ public class MapBoundary implements IPositionChangeObserver {
     public MapBoundary(IWorldMap map){this.map = map;}
 
     @Override
-    public void positionChanged(Vector2d oldPosition, Vector2d newPosition){
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal){
         if(!(map.objectAt(oldPosition) instanceof Grass)) {
             setSortedByX.remove(oldPosition);
             setSortedByY.remove(oldPosition);

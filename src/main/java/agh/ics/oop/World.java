@@ -13,66 +13,62 @@ import javafx.application.Application;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 import static java.lang.System.out;
 
 public class World {
 
     public static void main(String[] args) {
+
+//        ArrayList<String> arr = new ArrayList<>();
+//        arr.add("aha");
+//        arr.add("ehe");
+//        out.println(arr);
+//        arr.remove("aha");
+//        out.println(arr);
+//        arr.remove("aha");
+//        out.println(arr);
+
+
+
         int days = 2;
+        int maxAnimalEnergy = 4;
+        int grassEnergy = 5;
         int numberOfAnimals = 3;
         int amountOfGrass = 2;
         int width = 10;
         int height = 10;
         int jungleWidth = 5;
         int jungleHeight = 5;
-        WrappedMap wrappedMap = new WrappedMap(numberOfAnimals, amountOfGrass, width, height, jungleWidth, jungleHeight);
-        Animal animal1 = new Animal(wrappedMap, new Vector2d(0,0));
+        WrappedMap wrappedMap = new WrappedMap(maxAnimalEnergy, grassEnergy, numberOfAnimals, amountOfGrass, width, height, jungleWidth, jungleHeight);
+        Animal animal1 = new Animal(wrappedMap, new Vector2d(0,0), maxAnimalEnergy);
         wrappedMap.place(animal1);
 
-        out.println("FORWARD");
+
         out.println(wrappedMap);
+        out.println("BEFORE ANY MOVES");
+
         animal1.setMoveDirection(MoveDirection.FORWARD);
         animal1.move();
         out.println(wrappedMap);
-
-        animal1.setMoveDirection(MoveDirection.FORWARDLEFT);
-        animal1.move();
-        out.println(wrappedMap);
-
         out.println("FORWARD");
-        animal1.setMoveDirection(MoveDirection.FORWARD);
-        animal1.move();
-        out.println(wrappedMap);
         out.println(animal1.getPosition());
+        out.println(animal1.energy);
 
-        out.println("NEW ANIMAL!");
-        Animal animal2 = new Animal(wrappedMap, new Vector2d(0,9));
+        Animal animal2 = new Animal(wrappedMap, new Vector2d(0,1), maxAnimalEnergy);
         wrappedMap.place(animal2);
         out.println(wrappedMap);
+        out.println("NEW ANIMAL!");
 
-        out.println("FORWARD");
+        animal1.setMoveDirection(MoveDirection.BACKWARD);
+        animal1.move();
         animal2.setMoveDirection(MoveDirection.FORWARD);
         animal2.move();
         out.println(wrappedMap);
+        out.println("ANIMAL1 BACKWARD ANIMAL2 FORWARD");
 
-        animal2.setMoveDirection(MoveDirection.FORWARDLEFT);
-        animal2.move();
-        out.println(wrappedMap);
-
-        out.println("BACKWARD");
-        animal2.setMoveDirection(MoveDirection.BACKWARD);
-        animal2.move();
-        out.println(wrappedMap);
-
-        out.println("FORWARD");
-        animal2.setMoveDirection(MoveDirection.FORWARD);
-        animal2.move();
-        out.println(wrappedMap);
-
-        animal2.setMoveDirection(MoveDirection.BACKWARDLEFT);
-        animal2.move();
-        out.println(wrappedMap);
 
 //        WallMap wallMap = new WallMap(numberOfAnimals, amountOfGrass, width, height, jungleWidth, jungleHeight);
 //        Animal animal1 = new Animal(wallMap, new Vector2d(0,0));

@@ -34,11 +34,11 @@ public class App extends Application implements IPositionChangeObserver {
 
     @Override
     public void start(Stage primaryStage) throws IllegalArgumentException, FileNotFoundException {
-        for (Animal animal : map.getAnimals().values()){
-            animal.addObserver(this);
-            animal.setWidth(25); // optional - default options are width = 50, height = 70
-            animal.setHeight(35); // RATIO 5:7 -> WIDTH : HEIGHT
-        }
+//        for (Animal animal : map.getAnimals().values()){
+//            animal.addObserver(this);
+//            animal.setWidth(25); // optional - default options are width = 50, height = 70
+//            animal.setHeight(35); // RATIO 5:7 -> WIDTH : HEIGHT
+//        }
 
         drawGrid();
         // set up the scene
@@ -135,7 +135,7 @@ public class App extends Application implements IPositionChangeObserver {
         }
 
         // add grass and animal icons
-        LinkedHashMap<Vector2d, Animal> animals = map.getAnimals();
+        //LinkedHashMap<Vector2d, Animal> animals = map.getAnimals();
         LinkedHashMap<Vector2d, Grass> grasses = map.getGrass();
 
         for(Grass grass : grasses.values()){
@@ -143,15 +143,15 @@ public class App extends Application implements IPositionChangeObserver {
             gridPane.add(animalIcon.vBox, grass.getPosition().x + 1 - lowerLeft.x, upperRight.y - grass.getPosition().y + 1, 1, 1);
         }
 
-        for(Animal animal : animals.values()){
-            GuiElementBox animalIcon = new GuiElementBox(animal);
-            gridPane.add(animalIcon.vBox, animal.getPosition().x + 1 - lowerLeft.x, upperRight.y - animal.getPosition().y + 1, 1, 1);
-        }
+//        for(Animal animal : animals.values()){
+//            GuiElementBox animalIcon = new GuiElementBox(animal);
+//            gridPane.add(animalIcon.vBox, animal.getPosition().x + 1 - lowerLeft.x, upperRight.y - animal.getPosition().y + 1, 1, 1);
+//        }
     }
 
 
     @Override
-    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) {
         Platform.runLater( () ->{
             try {
                 drawGrid();
