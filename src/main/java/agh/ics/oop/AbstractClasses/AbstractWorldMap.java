@@ -9,6 +9,8 @@ import agh.ics.oop.WorldElements.Vector2d;
 
 import java.util.*;
 
+import static java.lang.System.out;
+
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
     public Random rand = new Random(42); // do testow - pozniej usun!
 
@@ -60,25 +62,17 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         findFreePrairiePositions();
 
         // first half in jungle
-//        for (int i = 0; i < firstHalfOfGrass; i++){
-//            if(this.freeJunglePositions.size() > 0) {
-//                putGrassOnJungle();
-//            }
-//        }
+        for (int i = 0; i < firstHalfOfGrass; i++){
+            if(this.freeJunglePositions.size() > 0) {
+                putGrassOnJungle();
+            }
+        }
         // second half in prairie (outside the jungle)
-//        for (int i = 0; i < secondHalfOfGrass; i++){
-//            if(this.freePrairiePositions.size() > 0) {
-//                putGrassOnPrairie();
-//            }
-//        }
-
-        // fill in the animals LinkedHashMap with empty TreeSets
-//        for(int x = this.lowerLeft.x; x <= this.upperRight.x; x++){
-//            for(int y = this.lowerLeft.y; y <= this.upperRight.y; y++){
-//                Vector2d vector2d = new Vector2d(x, y);
-//                this.animals.put(vector2d, new TreeSet<Animal>(AbstractWorldMap::compareOnEnergy));
-//            }
-//        }
+        for (int i = 0; i < secondHalfOfGrass; i++){
+            if(this.freePrairiePositions.size() > 0) {
+                putGrassOnPrairie();
+            }
+        }
     }
 
 
@@ -154,6 +148,72 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     public String toString(){return new MapVisualizer(this).draw(getLowerLeft(), getUpperRight());}
+
+    public void animalsCopulate(){
+        for(TreeSet<Animal> treeSet : this.animals.values()){
+            if(treeSet.size() > 1){
+                Animal animal1 = treeSet.first();
+                Animal animal2 = treeSet.higher(animal1);
+                assert animal2 != null; // to zamien pozniej na throwsa po prostu
+//                out.println(animal1.energy);
+//                out.println(animal2.energy);
+                int ratio1 = (int) Math.floor((double) animal1.energy * 100/ (animal1.energy + animal2.energy)); // ratio1 animal1.energy : (animal1.energy + animal2.energy)
+                int ratio2 = (int) Math.floor((double) animal2.energy * 100/ (animal1.energy + animal2.energy)); // ratio1 animal1.energy : (animal1.energy + animal2.energy)
+                out.println(ratio1);
+                out.println(ratio2);
+
+                Vector2d initialPosition = new Vector2d(animal1.getPosition().x, animal1.getPosition().y);
+                int childEnergy = (int) Math.floor((double) animal1.energy / 4) + (int) Math.floor((double)animal2.energy / 4);
+                animal1.energy -= (int) Math.floor((double) animal1.energy / 4);
+                animal2.energy -= (int) Math.floor((double) animal2.energy / 4);
+
+                Animal child = new Animal(this, initialPosition, childEnergy);
+
+                Collections.shuffle(animal1.genotype);
+                Collections.shuffle(animal2.genotype);
+                ArrayList<Integer> genotypeAnimal1 = animal1.genotype;
+                ArrayList<Integer> genotypeAnimal2 = animal2.genotype;
+                ArrayList<Integer> childGenotype = child.genotype;
+                Random random = new Random();
+                boolean randomBoolean = random.nextBoolean();
+//                randomBoolean = true; // tylko do testow - usun pozniej
+                // need to fill the rest 32-8=24 genes of the child
+                if(randomBoolean){
+                    // choose left genotype of the animal1 and right genotype of the animal2
+                    // considering ratios
+                    int numberOfGenesFromAnimal1 = (int) Math.ceil((double) ratio1 / 100 * 24);
+                    int numberOfGenesFromAnimal2 = 24 - numberOfGenesFromAnimal1;
+                    for(int i = 0; i < numberOfGenesFromAnimal1; i++){
+                        childGenotype.add(genotypeAnimal1.get(i));
+                    }
+                    int idx = genotypeAnimal2.size() - 1;
+                    for(int i = 0; i < numberOfGenesFromAnimal2; i++){
+                        childGenotype.add(genotypeAnimal2.get(idx));
+                        idx--;
+                    }
+
+
+                } else {
+                    // choose left genotype of the animal2 and right genotype of the animal1
+                    // considering ratios
+                    int numberOfGenesFromAnimal2 = (int) Math.ceil((double) ratio2 / 100 * 24);
+                    int numberOfGenesFromAnimal1 = 24 - numberOfGenesFromAnimal2;
+                    int idx = genotypeAnimal1.size() - 1;
+                    for(int i = 0; i < numberOfGenesFromAnimal1; i++){
+                        childGenotype.add(genotypeAnimal1.get(idx));
+                        idx--;
+                    }
+                    for(int i = 0; i < numberOfGenesFromAnimal2; i++){
+                        childGenotype.add(genotypeAnimal2.get(i));
+                    }
+                }
+
+                animal1.addNewChildren(child);
+                animal2.addNewChildren(child);
+                this.place(child);
+            }
+        }
+    }
 
     public void removeMovedAnimal(Animal animal,Vector2d oldPosition){
         this.animals.get(oldPosition).remove(animal);

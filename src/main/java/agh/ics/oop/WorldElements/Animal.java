@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Random;
 
 public class Animal implements IMapElement {
     private Vector2d position;
@@ -29,6 +30,7 @@ public class Animal implements IMapElement {
     public MoveDirection moveDirection; // dla testow - do usuniecia
     public ArrayList<Integer> genotype = new ArrayList<>();
     public boolean isAlive = true; // protected
+    public ArrayList<Animal> children = new ArrayList<>(); // protected
 
 //    public Animal(IWorldMap map){this(map, new Vector2d(2,2));}
 
@@ -37,7 +39,7 @@ public class Animal implements IMapElement {
         this.position = initialPosition;
         this.energy = energy;
         this.mapDirection = MapDirection.NORTH;
-        // narazie tworze tak geny ze kazdego jest po tyle samo
+        // each animal needs to have at least one gene of each kind
         for(int i = 0; i < 8; i++){
             this.genotype.add(i);
         }
@@ -226,4 +228,27 @@ public class Animal implements IMapElement {
     public void setHeight(int height) {this.height = height;}
 
     public void setWidth(int width) {this.width = width;}
+
+    public void addNewChildren(Animal animal){
+        this.children.add(animal);
+    }
+
+    public void fillTheGenes(){
+        // only used for the "Adam and Eve" animals
+        while(this.genotype.size() < 32){
+            Random rand = new Random();
+            rand.setSeed(42); // - only for test
+            int i = rand.nextInt(8);
+            this.genotype.add(i);
+        }
+    }
+    public void fillTheGenes2(){
+        // only used for the "Adam and Eve" animals
+        while(this.genotype.size() < 32){
+            Random rand = new Random();
+            rand.setSeed(20); // - only for test
+            int i = rand.nextInt(3);
+            this.genotype.add(i);
+        }
+    }
 }

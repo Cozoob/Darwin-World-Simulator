@@ -11,10 +11,7 @@ import agh.ics.oop.WorldElements.Animal;
 import agh.ics.oop.WorldElements.Vector2d;
 import javafx.application.Application;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.*;
 
 import static java.lang.System.out;
 
@@ -36,85 +33,31 @@ public class World {
 
         out.println(wrappedMap);
 
-//        wrappedMap.putGrassOnJungle();
-//        wrappedMap.putGrassOnPrairie();
-//        out.println(wrappedMap);
-//
-//        wrappedMap.putGrassOnJungle();
-//        wrappedMap.putGrassOnPrairie();
-//        out.println(wrappedMap);
-//
-//        wrappedMap.putGrassOnJungle();
-//        wrappedMap.putGrassOnPrairie();
-//        out.println(wrappedMap);
+        Animal animal1 = new Animal(wrappedMap, new Vector2d(2, 2), 10);
+//        Animal animal2 = new Animal(wrappedMap, new Vector2d(2, 3), 5);
+        Animal animal3 = new Animal(wrappedMap, new Vector2d(2, 2), 1);
 
-        // ONLY ON JUNGLE
-//        wrappedMap.putGrassOnJungle();
+        wrappedMap.place(animal1);
+//        wrappedMap.place(animal2);
+        out.println(wrappedMap);
+//        animal2.setMoveDirection(MoveDirection.BACKWARD);
+//        animal2.move();
+        wrappedMap.place(animal3);
+        out.println(wrappedMap);
+//        Animal an = wrappedMap.animals.get(new Vector2d(2, 2)).first();
+//        out.println(an.equals(animal2));
+//        out.println(wrappedMap.animals.get(new Vector2d(2,2)).higher(an).equals(animal1));
+        animal1.fillTheGenes();
+        animal3.fillTheGenes2();
+
+        out.println(animal3.energy);
+        out.println(animal3.genotype);
+        out.println(animal1.energy);
+        out.println(animal1.genotype);
+        wrappedMap.animalsCopulate();
 //        out.println(wrappedMap);
-//        wrappedMap.putGrassOnJungle();
-//        out.println(wrappedMap);
-//        wrappedMap.putGrassOnJungle();
-//        out.println(wrappedMap);
-//        while(wrappedMap.freeJunglePositions.size() > 0){
-//            wrappedMap.putGrassOnJungle();
-//        }
-//        wrappedMap.putGrassOnJungle();
-//        wrappedMap.putGrassOnJungle();
-//        wrappedMap.putGrassOnJungle();
-//        out.println(wrappedMap);
-
-        out.println("PRAIRIE");
-        // TEST ONLY ON PRAIRIE
-        wrappedMap.putGrassOnPrairie();
-        out.println(wrappedMap);
-        wrappedMap.putGrassOnPrairie();
-        out.println(wrappedMap);
-        wrappedMap.putGrassOnPrairie();
-        out.println(wrappedMap);
-        while(wrappedMap.freePrairiePositions.size() > 0){
-            wrappedMap.putGrassOnPrairie();
-        }
-        out.println(wrappedMap);
-
-        Animal animal = new Animal(wrappedMap,new Vector2d(3, 2), 3);
-        wrappedMap.place(animal);
-        out.println(wrappedMap.freePrairiePositions);
-        wrappedMap.animalsEatGrass();
-        out.println(wrappedMap);
-        animal.setMoveDirection(MoveDirection.FORWARD);
-        animal.move();
-        out.println(wrappedMap);
-        out.println(wrappedMap.freePrairiePositions);
-        wrappedMap.putGrassOnPrairie();
-        out.println(wrappedMap);
-
-
-        out.println("JUNGLE");
-        WrappedMap wrappedMap1 = new WrappedMap(maxAnimalEnergy, grassEnergy, numberOfAnimals, amountOfGrass, width, height, jungleWidth, jungleHeight);
-
-        out.println(wrappedMap1);
-        // ONLY ON JUNGLE
-        wrappedMap1.putGrassOnJungle();
-        out.println(wrappedMap1);
-        wrappedMap1.putGrassOnJungle();
-        out.println(wrappedMap1);
-        wrappedMap1.putGrassOnJungle();
-        out.println(wrappedMap1);
-        while(wrappedMap1.freeJunglePositions.size() > 0){
-            wrappedMap1.putGrassOnJungle();
-        }
-        out.println(wrappedMap1);
-
-        Animal animal1 = new Animal(wrappedMap1,new Vector2d(3, 3), 3);
-        wrappedMap1.place(animal1);
-        out.println(wrappedMap1.freeJunglePositions);
-        wrappedMap1.animalsEatGrass();
-        out.println(wrappedMap1);
-        animal1.setMoveDirection(MoveDirection.BACKWARD);
-        animal1.move();
-        out.println(wrappedMap1);
-        out.println(wrappedMap1.freeJunglePositions);
-        wrappedMap1.putGrassOnJungle();
-        out.println(wrappedMap1);
+//        out.println(animal3.energy);
+//        out.println(animal1.energy);
+        out.println(animal3.children.get(0).genotype);
     }
 }
