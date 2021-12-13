@@ -60,17 +60,17 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         findFreePrairiePositions();
 
         // first half in jungle
-        for (int i = 0; i < firstHalfOfGrass; i++){
-            if(this.freeJunglePositions.size() > 0) {
-                putGrassOnJungle();
-            }
-        }
+//        for (int i = 0; i < firstHalfOfGrass; i++){
+//            if(this.freeJunglePositions.size() > 0) {
+//                putGrassOnJungle();
+//            }
+//        }
         // second half in prairie (outside the jungle)
-        for (int i = 0; i < secondHalfOfGrass; i++){
-            if(this.freePrairiePositions.size() > 0) {
-                putGrassOnPrairie();
-            }
-        }
+//        for (int i = 0; i < secondHalfOfGrass; i++){
+//            if(this.freePrairiePositions.size() > 0) {
+//                putGrassOnPrairie();
+//            }
+//        }
 
         // fill in the animals LinkedHashMap with empty TreeSets
 //        for(int x = this.lowerLeft.x; x <= this.upperRight.x; x++){
@@ -84,23 +84,27 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     // mozna by bylo zrobic jedna metoda putGrassOn(i na czym....)
     public void putGrassOnJungle(){
-        Collections.shuffle(this.freeJunglePositions, this.rand); // do testow tylko
+        if(this.freeJunglePositions.size() > 0) {
+            Collections.shuffle(this.freeJunglePositions, this.rand); // do testow tylko
 //        Collections.shuffle(this.freeJunglePositions);
-        int index = this.freeJunglePositions.size() - 1;
-        Vector2d randomVector = this.freeJunglePositions.get(index);
-        this.freeJunglePositions.remove(index);
-        this.grassPositions.put(randomVector, new Grass(randomVector, this.grassEnergy));
-        this.mapBoundary.addPosition(randomVector);
+            int index = this.freeJunglePositions.size() - 1;
+            Vector2d randomVector = this.freeJunglePositions.get(index);
+            this.freeJunglePositions.remove(index);
+            this.grassPositions.put(randomVector, new Grass(randomVector, this.grassEnergy));
+            this.mapBoundary.addPosition(randomVector);
+        }
     }
 
     public void putGrassOnPrairie(){
-        Collections.shuffle(this.freePrairiePositions, this.rand); // do testow tylko
+        if(this.freePrairiePositions.size() > 0) {
+            Collections.shuffle(this.freePrairiePositions, this.rand); // do testow tylko
 //        Collections.shuffle(this.freePrairiePositions);
-        int index = this.freePrairiePositions.size() - 1;
-        Vector2d randomVector = this.freePrairiePositions.get(index);
-        this.freePrairiePositions.remove(index);
-        this.grassPositions.put(randomVector, new Grass(randomVector, this.grassEnergy));
-        this.mapBoundary.addPosition(randomVector);
+            int index = this.freePrairiePositions.size() - 1;
+            Vector2d randomVector = this.freePrairiePositions.get(index);
+            this.freePrairiePositions.remove(index);
+            this.grassPositions.put(randomVector, new Grass(randomVector, this.grassEnergy));
+            this.mapBoundary.addPosition(randomVector);
+        }
     }
 
     public boolean initialPlace(Animal animal){
@@ -260,7 +264,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     private void findFreePrairiePositions(){
         // for x in [lowerLeft.x, jungleLowerLeft) union (jungleUpperRight.x, upperRight.x]
         // for y in [lowerLeft.y, upperRight.y]
-        for(int y = this.jungleLowerLeft.y; y <= this.upperRight.y; y++){
+        for(int y = this.lowerLeft.y; y <= this.upperRight.y; y++){
             for(int x = this.lowerLeft.x; x < this.jungleLowerLeft.x; x++){
                 Vector2d vector2d = new Vector2d(x, y);
                 if(!isOccupied(vector2d)){
