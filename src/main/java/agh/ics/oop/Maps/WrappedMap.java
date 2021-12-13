@@ -11,8 +11,8 @@ import java.util.LinkedHashMap;
 public class WrappedMap extends AbstractWorldMap {
 
 
-    public WrappedMap(int maxAnimalEnergy, int grassEnergy, int numberOfAnimals, int amountOfGrass, int width, int height, int jungleWidth, int jungleHeight) {
-        super(maxAnimalEnergy, grassEnergy, numberOfAnimals, amountOfGrass, width, height, jungleWidth, jungleHeight);
+    public WrappedMap(int maxAnimalEnergy, int grassEnergy, int amountOfGrass, int width, int height, int jungleWidth, int jungleHeight) {
+        super(maxAnimalEnergy, grassEnergy, amountOfGrass, width, height, jungleWidth, jungleHeight);
     }
 
     @Override

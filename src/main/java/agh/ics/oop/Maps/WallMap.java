@@ -10,9 +10,8 @@ import java.util.LinkedHashMap;
 // mapa z "murem"
 public class WallMap extends AbstractWorldMap {
 
-
-    public WallMap(int maxAnimalEnergy, int grassEnergy, int numberOfAnimals, int amountOfGrass, int width, int height, int jungleWidth, int jungleHeight) {
-        super(maxAnimalEnergy, grassEnergy, numberOfAnimals, amountOfGrass, width, height, jungleWidth, jungleHeight);
+    public WallMap(int maxAnimalEnergy, int grassEnergy, int amountOfGrass, int width, int height, int jungleWidth, int jungleHeight) {
+        super(maxAnimalEnergy, grassEnergy, amountOfGrass, width, height, jungleWidth, jungleHeight);
     }
 
     @Override

@@ -165,7 +165,6 @@ public class App extends Application implements IPositionChangeObserver {
 //        out.println("New thread");
         String[] args = textField.getText().split("[\\s]");
         List<MoveDirection> moves = OptionsParser.parse(args);
-        this.engine.setMoves(moves);
         Thread thread = new Thread(this.engine);
         thread.start();
     }

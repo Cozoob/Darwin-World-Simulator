@@ -1,4 +1,5 @@
 package agh.ics.oop.AbstractClasses;
+
 import agh.ics.oop.Engine.MapBoundary;
 import agh.ics.oop.WorldElements.Animal;
 import agh.ics.oop.WorldElements.Grass;
@@ -12,55 +13,46 @@ import java.util.*;
 import static java.lang.System.out;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
-    public Random rand = new Random(42); // do testow - pozniej usun!
-
     public LinkedHashMap<Vector2d, Grass> grassPositions; // protected
     public LinkedHashMap<Vector2d, TreeSet<Animal>> animals; // protected
     public ArrayList<Animal> deadAnimals = new ArrayList<>(); // protected
-    public ArrayList<Animal> aliveAnimals = new ArrayList<>(); // protected
+    public ArrayList<Animal> aliveAnimals; // protected
     protected Vector2d lowerLeft = new Vector2d(0, 0);
     protected Vector2d upperRight;
     public Vector2d jungleLowerLeft; // protected
     public Vector2d jungleUpperRight; // protected
     protected MapBoundary mapBoundary; // final ?
-    public boolean isFreePositionOnJungle = true; // protected
-    public boolean isFreePositionOnPrairie = true; // protected
-    public int numberOfAnimals; // protected
     public ArrayList<Vector2d> freeJunglePositions = new ArrayList<>(); // protected
     public ArrayList<Vector2d> freePrairiePositions = new ArrayList<>(); // protected
-    // roslina poza jungle rosna w wiekszym rozproszeniu po prostu...
     public int grassEnergy; // protected
+    public int amountOfGrass;
     public int maxAnimalEnergy; // protected
-
-    // do usuniecia
-    public int firstHalfOfGrass;
-    public int secondHalfOfGrass;
+    public Random rand = new Random(); // protected
 
     // sprawdz jakie wartosci z inputu moga cos zepsuc... wyrzuc wtedy wyjatki
-    public AbstractWorldMap(int maxAnimalEnergy ,int grassEnergy, int numberOfAnimals, int amountOfGrass, int width, int height, int jungleWidth, int jungleHeight){
+    public AbstractWorldMap(int maxAnimalEnergy ,int grassEnergy, int amountOfGrass, int width, int height, int jungleWidth, int jungleHeight){
         if (jungleHeight > height || jungleWidth > width){
             System.out.println("ZLE");
             // wyrzuc wyjatek!
         }
         this.maxAnimalEnergy = maxAnimalEnergy;
         this.grassEnergy = grassEnergy;
-        this.numberOfAnimals = numberOfAnimals;
-        this.animals = new LinkedHashMap<Vector2d, TreeSet<Animal>>();
-        this.aliveAnimals = new ArrayList<Animal>();
+        this.amountOfGrass = amountOfGrass;
+        this.animals = new LinkedHashMap<>();
+        this.aliveAnimals = new ArrayList<>();
         this.grassPositions = new LinkedHashMap<>();
         this.mapBoundary = new MapBoundary(this);
         this.upperRight = new Vector2d(width - 1, height - 1);
         this.jungleLowerLeft = new Vector2d( (int) Math.ceil((double) width / 2 -  (double) jungleWidth / 2), (int) Math.ceil((double)height / 2 - (double) jungleHeight / 2));
         this.jungleUpperRight = new Vector2d( (int) Math.ceil((double) width / 2 +  (double) jungleWidth / 2) - 1, (int) Math.ceil((double)height / 2 + (double) jungleHeight / 2) - 1);
-        int firstHalfOfGrass = (int) Math.ceil((double)amountOfGrass / 2);
-        int secondHalfOfGrass = amountOfGrass - firstHalfOfGrass;
-        // start do usuniecia{
-        this.firstHalfOfGrass = firstHalfOfGrass;
-        this.secondHalfOfGrass = secondHalfOfGrass;
-        // }koniec do usuniecia
+
         findFreeJunglePositions();
         findFreePrairiePositions();
+    }
 
+    public void putInitialGrass(){
+        int firstHalfOfGrass = (int) Math.ceil((double)this.amountOfGrass / 2);
+        int secondHalfOfGrass = amountOfGrass - firstHalfOfGrass;
         // first half in jungle
         for (int i = 0; i < firstHalfOfGrass; i++){
             if(this.freeJunglePositions.size() > 0) {
@@ -79,8 +71,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     // mozna by bylo zrobic jedna metoda putGrassOn(i na czym....)
     public void putGrassOnJungle(){
         if(this.freeJunglePositions.size() > 0) {
-            Collections.shuffle(this.freeJunglePositions, this.rand); // do testow tylko
-//        Collections.shuffle(this.freeJunglePositions);
+        Collections.shuffle(this.freeJunglePositions);
             int index = this.freeJunglePositions.size() - 1;
             Vector2d randomVector = this.freeJunglePositions.get(index);
             this.freeJunglePositions.remove(index);
@@ -91,8 +82,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public void putGrassOnPrairie(){
         if(this.freePrairiePositions.size() > 0) {
-            Collections.shuffle(this.freePrairiePositions, this.rand); // do testow tylko
-//        Collections.shuffle(this.freePrairiePositions);
+        Collections.shuffle(this.freePrairiePositions);
             int index = this.freePrairiePositions.size() - 1;
             Vector2d randomVector = this.freePrairiePositions.get(index);
             this.freePrairiePositions.remove(index);
@@ -101,14 +91,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         }
     }
 
-    public boolean initialPlace(Animal animal){
-        Vector2d position = animal.getPosition();
-
-        if(!isOccupied(position)){
-            place(animal);
-        }
-        throw new IllegalArgumentException("\"" + animal.getPosition() + "\" field is invalid");
-    }
+//    public void initialPlace(Animal animal){
+//        Vector2d position = animal.getPosition();
+//
+//        if(!isOccupied(position)){
+//            place(animal);
+//        }
+//        throw new IllegalArgumentException("\"" + animal.getPosition() + "\" field is invalid");
+//    }
 
     @Override
     public boolean place(Animal animal) {
@@ -122,7 +112,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         this.aliveAnimals.add(animal);
         this.mapBoundary.addPosition(position);
         if(position.precedes(this.jungleUpperRight) && position.follows(this.jungleLowerLeft)){
-            this.freeJunglePositions.remove(position); // moze byc wolne?
+            this.freeJunglePositions.remove(position);
         } else {
             this.freePrairiePositions.remove(position);
         }
@@ -155,12 +145,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 Animal animal1 = treeSet.first();
                 Animal animal2 = treeSet.higher(animal1);
                 assert animal2 != null; // to zamien pozniej na throwsa po prostu
-//                out.println(animal1.energy);
-//                out.println(animal2.energy);
                 int ratio1 = (int) Math.floor((double) animal1.energy * 100/ (animal1.energy + animal2.energy)); // ratio1 animal1.energy : (animal1.energy + animal2.energy)
                 int ratio2 = (int) Math.floor((double) animal2.energy * 100/ (animal1.energy + animal2.energy)); // ratio1 animal1.energy : (animal1.energy + animal2.energy)
-                out.println(ratio1);
-                out.println(ratio2);
 
                 Vector2d initialPosition = new Vector2d(animal1.getPosition().x, animal1.getPosition().y);
                 int childEnergy = (int) Math.floor((double) animal1.energy / 4) + (int) Math.floor((double)animal2.energy / 4);
@@ -176,7 +162,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 ArrayList<Integer> childGenotype = child.genotype;
                 Random random = new Random();
                 boolean randomBoolean = random.nextBoolean();
-//                randomBoolean = true; // tylko do testow - usun pozniej
                 // need to fill the rest 32-8=24 genes of the child
                 if(randomBoolean){
                     // choose left genotype of the animal1 and right genotype of the animal2
@@ -223,18 +208,15 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     public void addMovedAnimal(Animal animal,Vector2d newPosition){
-        this.animals.computeIfAbsent(newPosition, k -> new TreeSet<Animal>(AbstractWorldMap::compareOnEnergy));
+        this.animals.computeIfAbsent(newPosition, k -> new TreeSet<>(AbstractWorldMap::compareOnEnergy));
         this.animals.get(newPosition).add(animal);
     }
 
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) {
-        // raczej do usuniecia
-//        this.animals.remove(oldPosition);
-//        this.animals.put(newPosition, animal);
         this.mapBoundary.positionChanged(oldPosition, newPosition, animal);
     }
 
-//    public LinkedHashMap<Vector2d, Animal> getAnimals(){return this.animals;}
+    public LinkedHashMap<Vector2d, TreeSet<Animal>> getAnimals(){return this.animals;}
 
     public Vector2d getLowerLeft(){return this.lowerLeft;}
 

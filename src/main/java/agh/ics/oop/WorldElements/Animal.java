@@ -15,7 +15,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Random;
 
 public class Animal implements IMapElement {
@@ -26,13 +25,9 @@ public class Animal implements IMapElement {
     private int width = 50;
     private int height = 70; // RATIO 5:7 -> WIDTH : HEIGHT
     public int energy; // private
-    public int orientationValue = 0; // values: [0->45->90->...->360) because 360 becomes 0
-    public MoveDirection moveDirection; // dla testow - do usuniecia
     public ArrayList<Integer> genotype = new ArrayList<>();
     public boolean isAlive = true; // protected
     public ArrayList<Animal> children = new ArrayList<>(); // protected
-
-//    public Animal(IWorldMap map){this(map, new Vector2d(2,2));}
 
     public Animal(AbstractWorldMap map, Vector2d initialPosition, int energy){
         this.map = map;
@@ -52,9 +47,6 @@ public class Animal implements IMapElement {
     // getter
     public MapDirection getMapDirection() {return mapDirection;}
 
-    // setter na testy - do usuniecia
-    public void setMoveDirection(MoveDirection moveDirection) {this.moveDirection = moveDirection;}
-
     // getter
     public IWorldMap getMap() {return map;}
 
@@ -70,7 +62,7 @@ public class Animal implements IMapElement {
     }
 
     public void move() {
-        if(!isAlive){
+        if(!isAlive){ // extra safety
             return;
         }
         removeEnergy(1); // each day is minus 1 energy for the animal
@@ -80,8 +72,7 @@ public class Animal implements IMapElement {
         }
 
         boolean canMoveTo = false;
-        MoveDirection direction = this.moveDirection; // dla testow - do usuniecia
-//        MoveDirection direction = chooseNewDirection();
+        MoveDirection direction = chooseNewDirection();
         Vector2d oldPosition = this.position;
         switch (direction){
            case FORWARD -> {
@@ -98,13 +89,11 @@ public class Animal implements IMapElement {
 
                if(canMoveTo){
                     this.position = newPosition;
-//                    map.removeMovedAnimal(this, oldPosition);
-//                    map.addMovedAnimal(this, newPosition);
                }
            }
            case BACKWARD -> {
                Vector2d newPosition = this.position.add(this.mapDirection.toUnitVector().opposite());
-               System.out.println(newPosition);
+//               System.out.println(newPosition);
                canMoveTo = map.canMoveTo(this.position.add(newPosition));
 
                if(!canMoveTo && map instanceof WrappedMap){
@@ -116,7 +105,6 @@ public class Animal implements IMapElement {
                }
 
                if(canMoveTo){
-//                   System.out.println(newPosition);
                    this.position = newPosition;
                }
            }
@@ -131,7 +119,7 @@ public class Animal implements IMapElement {
         }
         positionChanged(oldPosition);
         if(canMoveTo && this.energy > 0){
-            // it means it has moved
+            // animal has moved
             this.map.updateFreePositions(oldPosition, this.getPosition());
             this.map.updateListOfAnimals(this, oldPosition);
         }
@@ -237,17 +225,7 @@ public class Animal implements IMapElement {
         // only used for the "Adam and Eve" animals
         while(this.genotype.size() < 32){
             Random rand = new Random();
-            rand.setSeed(42); // - only for test
             int i = rand.nextInt(8);
-            this.genotype.add(i);
-        }
-    }
-    public void fillTheGenes2(){
-        // only used for the "Adam and Eve" animals
-        while(this.genotype.size() < 32){
-            Random rand = new Random();
-            rand.setSeed(20); // - only for test
-            int i = rand.nextInt(3);
             this.genotype.add(i);
         }
     }
