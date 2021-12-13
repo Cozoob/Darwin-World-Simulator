@@ -24,12 +24,12 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
         this.days = days;
         this.animalStartingEnergy = animalStartingEnergy;
         this.amountStartingAnimals = amountStartingAnimals;
+
+        engineSetUp();
     }
 
-
-    @Override
-    public synchronized void run() {
-        System.out.println(map);
+    public void engineSetUp(){
+        //        System.out.println(map);
 
         // place the started animals
         for(int i = 0; i < amountStartingAnimals; i++){
@@ -46,6 +46,10 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
 
         // put initial grass
         map.putInitialGrass();
+    }
+
+    @Override
+    public synchronized void run() {
 
         for (int day = 0; day <= days; day++){
             System.out.print("DAY: ");
@@ -68,7 +72,7 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
             // pod koniec kazdego dnia trzeba tez wlozyc nowa trawe na mape
             map.putGrassOnJungle();
             map.putGrassOnPrairie();
-            System.out.println(map);
+//            System.out.println(map);
             try {
                 Thread.sleep(moveDelay);
             } catch (InterruptedException e) {

@@ -6,6 +6,7 @@ import agh.ics.oop.Engine.SimulationEngine;
 import agh.ics.oop.EnumClasses.MoveDirection;
 import agh.ics.oop.Interfaces.IPositionChangeObserver;
 import agh.ics.oop.Maps.WallMap;
+import agh.ics.oop.Maps.WrappedMap;
 import agh.ics.oop.WorldElements.Animal;
 import agh.ics.oop.WorldElements.Grass;
 import agh.ics.oop.WorldElements.Vector2d;
@@ -25,32 +26,29 @@ import java.util.*;
 
 
 public class App extends Application implements IPositionChangeObserver {
-    MoveDirection[] directions;
-    String[] args;
-    Vector2d[] positions;
     AbstractWorldMap map;
     SimulationEngine engine;
     GridPane gridPane = new GridPane();
 
     @Override
     public void start(Stage primaryStage) throws IllegalArgumentException, FileNotFoundException {
-//        for (Animal animal : map.getAnimals().values()){
-//            animal.addObserver(this);
-//            animal.setWidth(25); // optional - default options are width = 50, height = 70
-//            animal.setHeight(35); // RATIO 5:7 -> WIDTH : HEIGHT
-//        }
+        for (Animal animal : map.getAliveAnimals()){
+            animal.addObserver(this);
+            animal.setWidth(25); // optional - default options are width = 50, height = 70
+            animal.setHeight(35); // RATIO 5:7 -> WIDTH : HEIGHT
+        }
 
         drawGrid();
         // set up the scene
         gridPane.setAlignment(Pos.CENTER);
 
         HBox hBox = new HBox();
-        TextField textField = new TextField();
+//        TextField textField = new TextField();
 
         Button button = new Button("START");
-        button.setOnAction( (ActionEvent event) -> clickOnButton(textField));
+        button.setOnAction( (ActionEvent event) -> clickOnButton());
         button.scaleShapeProperty();
-        hBox.getChildren().addAll(textField, button);
+        hBox.getChildren().addAll(button);
         hBox.setAlignment(Pos.CENTER);
         hBox.setSpacing(20);
 
@@ -87,14 +85,24 @@ public class App extends Application implements IPositionChangeObserver {
 
     @Override
     public void init() throws IllegalArgumentException {
-        args = getParameters().getRaw().toArray( new String[0] );
-        positions = new Vector2d[] {new Vector2d(0,0), new Vector2d(1,1)};
-        new OptionsParser();
-        directions = OptionsParser.parse(args).toArray(new MoveDirection[0]);
-        //map = new GrassField(5);
-        // map = new RectangularMap(5, 5);
-        //engine = new SimulationEngine(List.of(directions), map, positions);
-        //engine.setMoveDelay(500); // optional[ms] - 1000ms is the default option
+        // set up the map
+        int maxAnimalEnergy = 20;
+        int grassEnergy = 5;
+        int amountOfGrass = 2;
+        int width = 10;
+        int height = 10;
+        int jungleWidth = 5;
+        int jungleHeight = 5;
+        WrappedMap wrappedMap = new WrappedMap(maxAnimalEnergy, grassEnergy, amountOfGrass, width, height, jungleWidth, jungleHeight);
+        this.map = wrappedMap;
+
+        // set up the engine
+        int days = 20;
+        int animalStartingEnergy = 20;
+        int amountStartingAnimals = 10;
+        SimulationEngine engine = new SimulationEngine(wrappedMap, days, animalStartingEnergy, amountStartingAnimals);
+        this.engine = engine;
+        engine.setMoveDelay(2000);
     }
 
     public void drawGrid() throws FileNotFoundException {
@@ -143,10 +151,10 @@ public class App extends Application implements IPositionChangeObserver {
             gridPane.add(animalIcon.vBox, grass.getPosition().x + 1 - lowerLeft.x, upperRight.y - grass.getPosition().y + 1, 1, 1);
         }
 
-//        for(Animal animal : animals.values()){
-//            GuiElementBox animalIcon = new GuiElementBox(animal);
-//            gridPane.add(animalIcon.vBox, animal.getPosition().x + 1 - lowerLeft.x, upperRight.y - animal.getPosition().y + 1, 1, 1);
-//        }
+        for(Animal animal : map.aliveAnimals){
+            GuiElementBox animalIcon = new GuiElementBox(animal);
+            gridPane.add(animalIcon.vBox, animal.getPosition().x + 1 - lowerLeft.x, upperRight.y - animal.getPosition().y + 1, 1, 1);
+        }
     }
 
 
@@ -161,10 +169,8 @@ public class App extends Application implements IPositionChangeObserver {
         } );
     }
 
-    private void clickOnButton(TextField textField) throws IllegalArgumentException{
-//        out.println("New thread");
-        String[] args = textField.getText().split("[\\s]");
-        List<MoveDirection> moves = OptionsParser.parse(args);
+    private void clickOnButton() throws IllegalArgumentException{
+        System.out.println("New thread");
         Thread thread = new Thread(this.engine);
         thread.start();
     }
