@@ -29,7 +29,7 @@ public class GuiElementBox extends Node{
         } else if (object instanceof Grass){
             Grass grass = (Grass) object;
             this.imageView = grass.getImageView();
-            this.label = grass.getLabel();
+//            this.label = grass.getLabel();
 
         } else { // do zmiany
             image = new Image("unknown");

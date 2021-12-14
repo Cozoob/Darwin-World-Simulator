@@ -10,8 +10,6 @@ import agh.ics.oop.WorldElements.Vector2d;
 
 import java.util.*;
 
-import static java.lang.System.out;
-
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
     public LinkedHashMap<Vector2d, Grass> grassPositions; // protected
     public LinkedHashMap<Vector2d, TreeSet<Animal>> animals; // protected
@@ -28,13 +26,18 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public int amountOfGrass;
     public int maxAnimalEnergy; // protected
     public Random rand = new Random(); // protected
+    public int minimumEnergyToCopulate;
+    public boolean isMagic;
+    protected int counterOfMagic = 0;
 
     // sprawdz jakie wartosci z inputu moga cos zepsuc... wyrzuc wtedy wyjatki
-    public AbstractWorldMap(int maxAnimalEnergy ,int grassEnergy, int amountOfGrass, int width, int height, int jungleWidth, int jungleHeight){
+    public AbstractWorldMap(boolean isMagic,int minimumEnergyToCopulate,int maxAnimalEnergy ,int grassEnergy, int amountOfGrass, int width, int height, int jungleWidth, int jungleHeight){
         if (jungleHeight > height || jungleWidth > width){
             System.out.println("ZLE");
             // wyrzuc wyjatek!
         }
+        this.isMagic = isMagic;
+        this.minimumEnergyToCopulate = minimumEnergyToCopulate;
         this.maxAnimalEnergy = maxAnimalEnergy;
         this.grassEnergy = grassEnergy;
         this.amountOfGrass = amountOfGrass;
@@ -91,14 +94,19 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         }
     }
 
-//    public void initialPlace(Animal animal){
-//        Vector2d position = animal.getPosition();
-//
-//        if(!isOccupied(position)){
-//            place(animal);
-//        }
-//        throw new IllegalArgumentException("\"" + animal.getPosition() + "\" field is invalid");
-//    }
+    public void initialPlace(Animal animal){
+        Vector2d position = animal.getPosition();
+
+        if (!this.animals.containsKey(position)){
+            this.animals.put(position, new TreeSet<Animal>(AbstractWorldMap::compareOnEnergy));
+        }
+
+        this.animals.get(position).add(animal);
+        this.aliveAnimals.add(animal);
+        this.mapBoundary.addPosition(position);
+        this.freeJunglePositions.remove(position);
+
+    }
 
     @Override
     public boolean place(Animal animal) {
@@ -144,7 +152,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             if(treeSet.size() > 1){
                 Animal animal1 = treeSet.first();
                 Animal animal2 = treeSet.higher(animal1);
-                assert animal2 != null; // to zamien pozniej na throwsa po prostu
+                if(animal2 == null){
+                    continue;
+                }
+                if(animal1.energy < this.minimumEnergyToCopulate || animal2.energy < this.minimumEnergyToCopulate){
+                    continue;
+                }
+                // to zamien pozniej na throwsa po prostu?? TODO
+                // problem z ta metoda NullPointerException...! -- czy rozwiazane
                 int ratio1 = (int) Math.floor((double) animal1.energy * 100/ (animal1.energy + animal2.energy)); // ratio1 animal1.energy : (animal1.energy + animal2.energy)
                 int ratio2 = (int) Math.floor((double) animal2.energy * 100/ (animal1.energy + animal2.energy)); // ratio1 animal1.energy : (animal1.energy + animal2.energy)
 
@@ -204,6 +219,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         this.animals.get(oldPosition).remove(animal);
         if(this.animals.get(oldPosition).size() == 0){
             this.animals.remove(oldPosition);
+        }
+        // TODO tutaj sprawdaj czy jest magiczna i czy ma dodwac nowe zwierzaki
+        if(this.isMagic && this.aliveAnimals.size() <= 5 && this.counterOfMagic < 3){
+            magicHappen();
+            this.counterOfMagic++;
         }
     }
 
@@ -352,5 +372,23 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public ArrayList<Animal> getAliveAnimals() {
         return aliveAnimals;
+    }
+
+    private void magicHappen(){
+        ArrayList<Animal> copyOfAnimals = new ArrayList<>();
+        for(Animal animal : this.aliveAnimals) {
+            Vector2d position = animal.getPosition();
+            int energy = this.maxAnimalEnergy;
+            Animal copiedAnimal = new Animal(this, position, energy);
+            copiedAnimal.genotype = new ArrayList<>(animal.genotype);
+            copyOfAnimals.add(copiedAnimal);
+        }
+        for(Animal animal : copyOfAnimals){
+            this.aliveAnimals.add(animal);
+            this.animals.computeIfAbsent(animal.getPosition(), k -> new TreeSet<>(AbstractWorldMap::compareOnEnergy));
+            this.animals.get(animal.getPosition()).add(animal);
+        }
+        // TODO komunikat w interfejsie o magicznosci
+        System.out.println("MAGIC HAPPENED!");
     }
 }

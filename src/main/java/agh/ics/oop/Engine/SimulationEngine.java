@@ -38,9 +38,9 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
                 break; // no free fields to place started animals!
             }
 
-            Animal animal = new Animal(map, getRandomFreePosition(), animalStartingEnergy);
-//            map.initialPlace(animal);
-            map.place(animal);
+            Animal animal = new Animal(map, getRandomFreeJunglePosition(), animalStartingEnergy);
+            map.initialPlace(animal);
+//            map.place(animal);
             animal.fillTheGenes();
         }
 
@@ -72,7 +72,7 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
             // pod koniec kazdego dnia trzeba tez wlozyc nowa trawe na mape
             map.putGrassOnJungle();
             map.putGrassOnPrairie();
-//            System.out.println(map);
+            System.out.println(map);
             try {
                 Thread.sleep(moveDelay);
             } catch (InterruptedException e) {
@@ -85,36 +85,19 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
 
     private Vector2d getRandomVector2d(){
         Random rand = new Random();
-        int maxX = map.getUpperRight().x;
-        int maxY = map.getUpperRight().y;
+        int maxX = map.jungleUpperRight.x;
+        int maxY = map.jungleUpperRight.y;
         int randomX = rand.nextInt(maxX + 1);
         int randomY = rand.nextInt(maxY + 1);
         return new Vector2d(randomX, randomY);
     }
 
-    private Vector2d getRandomFreePosition(){
-        Collections.shuffle(map.freePrairiePositions);
-        Collections.shuffle(map.freeJunglePositions);
+    private Vector2d getRandomFreeJunglePosition(){
         int randomX;
         int randomY;
         Random rand = new Random();
-        boolean randomBoolean = rand.nextBoolean();
-        if(map.freePrairiePositions.size() == 0){
-            randomBoolean = false;
-        } else if (map.freeJunglePositions.size() == 0){
-            randomBoolean = true;
-        }
-
-        Vector2d vector2d;
-        if(randomBoolean){
-            // z prairie
-            vector2d = map.freePrairiePositions.get(0);
-        } else {
-            // z jungle
-            vector2d = map.freeJunglePositions.get(0);
-        }
-        randomX = vector2d.x;
-        randomY = vector2d.y;
+        randomX = rand.nextInt(map.jungleUpperRight.x - map.jungleLowerLeft.x + 1) + map.jungleLowerLeft.x;
+        randomY = rand.nextInt(map.jungleUpperRight.y - map.jungleLowerLeft.y + 1) + map.jungleLowerLeft.y;
 
         return new Vector2d(randomX, randomY);
     }

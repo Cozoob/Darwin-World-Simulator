@@ -211,7 +211,7 @@ public class Animal implements IMapElement {
     }
 
     @Override
-    public Label getLabel() {return new Label(this.getPosition().toString());}
+    public Label getLabel() {return new Label(Integer.toString(this.energy));}
 
     public void setHeight(int height) {this.height = height;}
 

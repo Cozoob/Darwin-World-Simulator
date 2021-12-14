@@ -14,6 +14,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -26,21 +27,40 @@ import java.util.*;
 
 
 public class App extends Application implements IPositionChangeObserver {
-    AbstractWorldMap map;
-    SimulationEngine engine;
-    GridPane gridPane = new GridPane();
+    AbstractWorldMap map1;
+    AbstractWorldMap map2;
+    SimulationEngine engine1;
+    SimulationEngine engine2;
+    GridPane gridPane1 = new GridPane();
+    GridPane gridPane2 = new GridPane();
 
     @Override
     public void start(Stage primaryStage) throws IllegalArgumentException, FileNotFoundException {
-        for (Animal animal : map.getAliveAnimals()){
+        for (Animal animal : map1.getAliveAnimals()){
             animal.addObserver(this);
             animal.setWidth(25); // optional - default options are width = 50, height = 70
             animal.setHeight(35); // RATIO 5:7 -> WIDTH : HEIGHT
         }
 
-        drawGrid();
+//        for (Animal animal : map2.getAliveAnimals()){
+//            animal.addObserver(this);
+//            animal.setWidth(25); // optional - default options are width = 50, height = 70
+//            animal.setHeight(35); // RATIO 5:7 -> WIDTH : HEIGHT
+//        }
+
+        drawGrid(this.map1, this.gridPane1);
+        drawGrid(this.map2, this.gridPane2);
+
+        HBox hBox0 = new HBox();
+        Separator separator = new Separator();
+
+        hBox0.getChildren().addAll(gridPane1,gridPane2);
+        gridPane1.setAlignment(Pos.TOP_LEFT);
+        gridPane2.setAlignment(Pos.TOP_RIGHT);
+        gridPane1.setPadding(new Insets(10));
+        gridPane2.setPadding(new Insets(10));
         // set up the scene
-        gridPane.setAlignment(Pos.CENTER);
+//        gridPane.setAlignment(Pos.CENTER);
 
         HBox hBox = new HBox();
 //        TextField textField = new TextField();
@@ -53,7 +73,7 @@ public class App extends Application implements IPositionChangeObserver {
         hBox.setSpacing(20);
 
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(hBox, gridPane);
+        vBox.getChildren().addAll(hBox, hBox0);
         vBox.setSpacing(20);
 
         StackPane stackPane = new StackPane(vBox);
@@ -79,33 +99,58 @@ public class App extends Application implements IPositionChangeObserver {
         primaryStage.show();
 
 
-        Thread thread = new Thread(engine);
-        thread.start();
+        Thread thread1 = new Thread(engine1);
+        Thread thread2 = new Thread(engine2);
+        thread1.start();
+        thread2.start();
     }
 
     @Override
     public void init() throws IllegalArgumentException {
-        // set up the map
-        int maxAnimalEnergy = 20;
-        int grassEnergy = 5;
-        int amountOfGrass = 2;
-        int width = 10;
-        int height = 10;
-        int jungleWidth = 5;
-        int jungleHeight = 5;
-        WrappedMap wrappedMap = new WrappedMap(maxAnimalEnergy, grassEnergy, amountOfGrass, width, height, jungleWidth, jungleHeight);
-        this.map = wrappedMap;
+        // set up the first map
+        boolean isMagic1 = true;
+        int minimumEnergyToCopulate1 = 5;
+        int maxAnimalEnergy1 = 20;
+        int grassEnergy1 = 5;
+        int amountOfGrass1 = 2;
+        int width1 = 10;
+        int height1 = 10;
+        int jungleWidth1 = 5;
+        int jungleHeight1 = 5;
+        WrappedMap wrappedMap = new WrappedMap(isMagic1,minimumEnergyToCopulate1,maxAnimalEnergy1, grassEnergy1, amountOfGrass1, width1, height1, jungleWidth1, jungleHeight1);
+        this.map1 = wrappedMap;
 
-        // set up the engine
-        int days = 20;
-        int animalStartingEnergy = 20;
-        int amountStartingAnimals = 10;
-        SimulationEngine engine = new SimulationEngine(wrappedMap, days, animalStartingEnergy, amountStartingAnimals);
-        this.engine = engine;
-        engine.setMoveDelay(2000);
+        // set up the second map
+        boolean isMagic2 = true;
+        int minimumEnergyToCopulate2= 5;
+        int maxAnimalEnergy2 = 20;
+        int grassEnergy2 = 5;
+        int amountOfGrass2 = 2;
+        int width2 = 10;
+        int height2 = 10;
+        int jungleWidth2 = 5;
+        int jungleHeight2 = 5;
+        WallMap wallMap = new WallMap(isMagic2,minimumEnergyToCopulate2,maxAnimalEnergy2, grassEnergy2, amountOfGrass2, width2, height2, jungleWidth2, jungleHeight2);
+        this.map2 = wallMap;
+
+        // set up the engine1
+        int days1 = 20;
+        int animalStartingEnergy1 = 20;
+        int amountStartingAnimals1 = 10;
+        SimulationEngine engine1 = new SimulationEngine(wrappedMap, days1, animalStartingEnergy1, amountStartingAnimals1);
+        this.engine1 = engine1;
+        engine1.setMoveDelay(2000);
+
+        // set up the engine2
+        int days2 = 20;
+        int animalStartingEnergy2 = 20;
+        int amountStartingAnimals2 = 10;
+        SimulationEngine engine2 = new SimulationEngine(wallMap, days2, animalStartingEnergy2, amountStartingAnimals2);
+        this.engine2 = engine2;
+        engine2.setMoveDelay(2000);
     }
 
-    public void drawGrid() throws FileNotFoundException {
+    public void drawGrid(AbstractWorldMap map, GridPane gridPane) throws FileNotFoundException {
 
         gridPane.setGridLinesVisible(false);
         gridPane.getChildren().clear();
@@ -159,10 +204,11 @@ public class App extends Application implements IPositionChangeObserver {
 
 
     @Override
-    public void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) {
+    public synchronized void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) {
         Platform.runLater( () ->{
             try {
-                drawGrid();
+                drawGrid(this.map1, this.gridPane1);
+                drawGrid(this.map2, this.gridPane2);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -171,7 +217,7 @@ public class App extends Application implements IPositionChangeObserver {
 
     private void clickOnButton() throws IllegalArgumentException{
         System.out.println("New thread");
-        Thread thread = new Thread(this.engine);
+        Thread thread = new Thread(this.engine1);
         thread.start();
     }
 
