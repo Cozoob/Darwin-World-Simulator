@@ -28,6 +28,7 @@ public class Animal implements IMapElement {
     public ArrayList<Integer> genotype = new ArrayList<>();
     public boolean isAlive = true; // protected
     public ArrayList<Animal> children = new ArrayList<>(); // protected
+    public int daysAlive = 0;
 
     public Animal(AbstractWorldMap map, Vector2d initialPosition, int energy){
         this.map = map;
@@ -62,9 +63,6 @@ public class Animal implements IMapElement {
     }
 
     public void move() {
-        if(!isAlive){ // extra safety
-            return;
-        }
         removeEnergy(1); // each day is minus 1 energy for the animal
         if(!isAlive) {
             map.removeDeadAnimal(this);
@@ -81,7 +79,7 @@ public class Animal implements IMapElement {
 
                if(!canMoveTo && map instanceof WrappedMap){
                    // "wrap" the position if needed
-                   Vector2d wrappedPosition = wrapPosition(newPosition);
+                   Vector2d wrappedPosition = ((WrappedMap) map).wrapPosition(newPosition);
                    newPosition.x = wrappedPosition.x;
                    newPosition.y = wrappedPosition.y;
                    canMoveTo = true;
@@ -98,7 +96,7 @@ public class Animal implements IMapElement {
 
                if(!canMoveTo && map instanceof WrappedMap){
                    // "wrap" the position if needed
-                   Vector2d wrappedPosition = wrapPosition(newPosition);
+                   Vector2d wrappedPosition = ((WrappedMap) map).wrapPosition(newPosition);
                    newPosition.x = wrappedPosition.x;
                    newPosition.y = wrappedPosition.y;
                    canMoveTo = true;
@@ -123,24 +121,11 @@ public class Animal implements IMapElement {
             this.map.updateFreePositions(oldPosition, this.getPosition());
             this.map.updateListOfAnimals(this, oldPosition);
         }
-    }
-
-    private Vector2d wrapPosition(Vector2d newPosition){
-        Vector2d upperRight = map.getUpperRight();
-        Vector2d lowerLeft = map.getLowerLeft();
-        if (newPosition.x < lowerLeft.x) {
-            newPosition.x = upperRight.x;
+        // TODO tutaj sprawdaj czy jest magiczna i czy ma dodwac nowe zwierzaki
+        if(this.map.isMagic && this.map.aliveAnimals.size() <= 5){
+            map.magicHappen();
         }
-        if (newPosition.x > upperRight.x) {
-            newPosition.x = lowerLeft.x;
-        }
-        if (newPosition.y < lowerLeft.y) {
-            newPosition.y = upperRight.y;
-        }
-        if (newPosition.y > upperRight.y) {
-            newPosition.y = lowerLeft.y;
-        }
-        return newPosition;
+        this.daysAlive++;
     }
 
     // jesli dobrze rozumiem zwierze nie wykonuje obrotu o 0 stopni ani o 180... gdy jest gen 0 lub 4
@@ -211,6 +196,12 @@ public class Animal implements IMapElement {
     }
 
     @Override
+    public boolean equals(Object other){
+        return this == other;
+
+    }
+
+    @Override
     public Label getLabel() {return new Label(Integer.toString(this.energy));}
 
     public void setHeight(int height) {this.height = height;}
@@ -229,4 +220,6 @@ public class Animal implements IMapElement {
             this.genotype.add(i);
         }
     }
+
+    public int getNumberOfChildren() {return this.children.size();}
 }

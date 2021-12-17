@@ -7,10 +7,7 @@ import agh.ics.oop.Interfaces.IWorldMap;
 import agh.ics.oop.WorldElements.Animal;
 import agh.ics.oop.WorldElements.Vector2d;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 public class SimulationEngine extends Thread implements IEngine, Runnable{
     private AbstractWorldMap map;
@@ -41,7 +38,7 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
             Animal animal = new Animal(map, getRandomFreeJunglePosition(), animalStartingEnergy);
             map.initialPlace(animal);
 //            map.place(animal);
-            animal.fillTheGenes();
+//            animal.fillTheGenes();
         }
 
         // put initial grass
@@ -55,13 +52,22 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
             System.out.print("DAY: ");
             System.out.println(day);
             if(map.getAliveAnimals().isEmpty()){
-                continue;
+                break;
             }
             ArrayList<Animal> currentAliveAnimals = new ArrayList<>(map.getAliveAnimals());
             for(Animal animal : currentAliveAnimals){
                 // kazdy wykonuje losowany z genow jego ruch po mapie
                 animal.move(); // dodatkowo jest usuwane zwierze z mapy jesli umarlo
 //                System.out.println(animal.getMapDirection());
+            }
+            for(HashSet<Animal> animals : map.animals.values()){
+                for(Animal animal : animals){
+//                    System.out.println(System.identityHashCode(animal) );
+//                    System.out.println(animal);
+//                    System.out.println(animal.energy);
+//                    System.out.println(animal.isAlive);
+//                    System.out.println(animal.children);
+                }
             }
             // teraz trzeba sprawdzic czy sa animalse ktore stoja na jakiejs trawie jesli tak to je ja
             // najsilniejszy (inne rozstrzyganie remisow pozniej dodaj)
@@ -73,11 +79,24 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
             map.putGrassOnJungle();
             map.putGrassOnPrairie();
             System.out.println(map);
+            System.out.println(map.getModeOfGenotypes());
+//            System.out.println(map.getModeOfGenotypes());
+            int counter = 0;
+            for(Integer number : map.genotypes.values()){
+                counter += number;
+            }
+            if(counter != map.aliveAnimals.size()){
+                System.out.println(map.aliveAnimals);
+                System.out.println(counter);
+                System.exit(1);
+            }
             try {
                 Thread.sleep(moveDelay);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+//            System.out.println(map.aliveAnimals);
+//            System.out.println(map.animals);
         }
     }
 
