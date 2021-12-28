@@ -6,6 +6,7 @@ import agh.ics.oop.Interfaces.IEngine;
 import agh.ics.oop.WorldElements.Animal;
 import agh.ics.oop.WorldElements.Vector2d;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class SimulationEngine extends Thread implements IEngine, Runnable{

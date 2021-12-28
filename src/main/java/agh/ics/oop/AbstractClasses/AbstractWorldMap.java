@@ -8,6 +8,7 @@ import agh.ics.oop.Interfaces.IWorldMap;
 import agh.ics.oop.Engine.MapVisualizer;
 import agh.ics.oop.WorldElements.Vector2d;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
@@ -90,7 +91,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             int index = this.freeJunglePositions.size() - 1;
             Vector2d randomVector = this.freeJunglePositions.get(index);
             this.freeJunglePositions.remove(index);
-            this.grassPositions.put(randomVector, new Grass(randomVector, this.grassEnergy));
+            try {
+                this.grassPositions.put(randomVector, new Grass(randomVector, this.grassEnergy));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
             this.mapBoundary.addPosition(randomVector);
             this.amountOfGrass++;
         }
@@ -102,7 +107,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             int index = this.freePrairiePositions.size() - 1;
             Vector2d randomVector = this.freePrairiePositions.get(index);
             this.freePrairiePositions.remove(index);
-            this.grassPositions.put(randomVector, new Grass(randomVector, this.grassEnergy));
+            try {
+                this.grassPositions.put(randomVector, new Grass(randomVector, this.grassEnergy));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
             this.mapBoundary.addPosition(randomVector);
             this.amountOfGrass++;
         }

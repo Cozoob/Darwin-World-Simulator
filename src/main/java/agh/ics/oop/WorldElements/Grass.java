@@ -11,10 +11,12 @@ import java.io.FileNotFoundException;
 public class Grass implements IMapElement {
     private final Vector2d position;
     public int energy;
+    private Image image;
 
-    public Grass(Vector2d position, int energy){
+    public Grass(Vector2d position, int energy) throws FileNotFoundException {
         this.position = position;
         this.energy = energy;
+        this.image = new Image(new FileInputStream("src/main/resources/grass-icon.jpg"));
     }
 
     public Vector2d getPosition(){return this.position;}
@@ -23,7 +25,6 @@ public class Grass implements IMapElement {
 
     @Override
     public ImageView getImageView() throws FileNotFoundException {
-        Image image = new Image(new FileInputStream("src/main/resources/grass-icon.jpg"));
         int width = 50;
         int height = 50;
 

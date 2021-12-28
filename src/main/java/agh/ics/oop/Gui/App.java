@@ -90,6 +90,7 @@ public class App extends Application implements IPositionChangeObserver {
         gridPane.getChildren().clear();
         gridPane.getColumnConstraints().clear();
         gridPane.getRowConstraints().clear();
+        gridPane.getChildren().clear();
 
         int rowSize = 60;
         int columnSize = 60;
@@ -122,15 +123,18 @@ public class App extends Application implements IPositionChangeObserver {
         }
 
         // add grass and animal icons
-        //LinkedHashMap<Vector2d, Animal> animals = map.getAnimals();
+        // LinkedHashMap<Vector2d, Animal> animals = map.getAnimals();
         LinkedHashMap<Vector2d, Grass> grasses = map.getGrassPositions();
 
-        for(Grass grass : grasses.values()){
+        ArrayList<Grass> grassesValues = new ArrayList<>(grasses.values());
+        ArrayList<Animal> animalsValues = new ArrayList<>(map.getAliveAnimals());
+
+        for(Grass grass : grassesValues){
             GuiElementBox animalIcon = new GuiElementBox(grass);
             gridPane.add(animalIcon.vBox, grass.getPosition().x + 1 - lowerLeft.x, upperRight.y - grass.getPosition().y + 1, 1, 1);
         }
 
-        for(Animal animal : map.getAliveAnimals()){
+        for(Animal animal : animalsValues){
             GuiElementBox animalIcon = new GuiElementBox(animal);
             gridPane.add(animalIcon.vBox, animal.getPosition().x + 1 - lowerLeft.x, upperRight.y - animal.getPosition().y + 1, 1, 1);
         }
