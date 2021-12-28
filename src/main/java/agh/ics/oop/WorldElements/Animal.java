@@ -52,6 +52,10 @@ public class Animal implements IMapElement {
 
     public void addEnergy(int energy){this.energy = Math.min(this.energy + energy, this.map.getMaxAnimalEnergy());}
 
+    public ArrayList<Integer> getGenotype() {
+        return genotype;
+    }
+
     public void removeEnergy(int energy) {
         this.energy = Math.max(this.energy - energy, 0);
         if(this.energy == 0){

@@ -29,13 +29,10 @@ public class GuiElementBox extends Node{
         } else if (object instanceof Grass){
             Grass grass = (Grass) object;
             this.imageView = grass.getImageView();
-//            this.label = grass.getLabel();
+            this.label = grass.getLabel();
 
-        } else { // do zmiany
-            image = new Image("unknown");
-        }
+        } else { throw new FileNotFoundException("Image not found!");}
 
-        this.label.setFont(new Font(15));
         this.vBox = new VBox();
         this.vBox.getChildren().add(0, imageView);
         this.vBox.getChildren().add(1, label);
