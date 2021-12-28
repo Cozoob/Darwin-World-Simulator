@@ -22,12 +22,12 @@ public class Animal implements IMapElement {
     private MapDirection mapDirection;
     private final AbstractWorldMap map;
     private final ArrayList<IPositionChangeObserver> positionObservers = new ArrayList<>();
-    private int width = 50;
-    private int height = 70; // RATIO 5:7 -> WIDTH : HEIGHT
-    public int energy; // private
+    private int width = 60;
+    private int height = 60;
+    public int energy;
     public ArrayList<Integer> genotype = new ArrayList<>();
-    public boolean isAlive = true; // protected
-    public ArrayList<Animal> children = new ArrayList<>(); // protected
+    public boolean isAlive = true;
+    public ArrayList<Animal> children = new ArrayList<>();
     public int daysAlive = 0;
 
     public Animal(AbstractWorldMap map, Vector2d initialPosition, int energy){
@@ -42,18 +42,15 @@ public class Animal implements IMapElement {
         addObserver(map);
     }
 
-    // getter
     public Vector2d getPosition() {return position;}
 
-    // getter
     public MapDirection getMapDirection() {return mapDirection;}
 
-    // getter
     public IWorldMap getMap() {return map;}
 
     public String toString(){return mapDirection.toString();}
 
-    public void addEnergy(int energy){this.energy = Math.min(this.energy + energy, this.map.maxAnimalEnergy);}
+    public void addEnergy(int energy){this.energy = Math.min(this.energy + energy, this.map.getMaxAnimalEnergy());}
 
     public void removeEnergy(int energy) {
         this.energy = Math.max(this.energy - energy, 0);
@@ -91,7 +88,6 @@ public class Animal implements IMapElement {
            }
            case BACKWARD -> {
                Vector2d newPosition = this.position.add(this.mapDirection.toUnitVector().opposite());
-//               System.out.println(newPosition);
                canMoveTo = map.canMoveTo(this.position.add(newPosition));
 
                if(!canMoveTo && map instanceof WrappedMap){
@@ -121,15 +117,12 @@ public class Animal implements IMapElement {
             this.map.updateFreePositions(oldPosition, this.getPosition());
             this.map.updateListOfAnimals(this, oldPosition);
         }
-        // TODO tutaj sprawdaj czy jest magiczna i czy ma dodwac nowe zwierzaki
-        if(this.map.isMagic && this.map.aliveAnimals.size() <= 5){
+        if(this.map.getIsMagic() && this.map.getAliveAnimals().size() <= 5){
             map.magicHappen();
         }
         this.daysAlive++;
     }
 
-    // jesli dobrze rozumiem zwierze nie wykonuje obrotu o 0 stopni ani o 180... gdy jest gen 0 lub 4
-    // (odpowiednio 0 lub 180 stopni) to zwierze albo idzie do przodu albo do tylu
     private MoveDirection chooseNewDirection(){
         Collections.shuffle(this.genotype);
         int gene = this.genotype.get(0) * 45; // choose the random (because of the previous shuffle) gene [degrees]
@@ -143,7 +136,7 @@ public class Animal implements IMapElement {
             case 225 -> {return MoveDirection.BACKWARDLEFT;}
             case 270 -> {return MoveDirection.LEFT;}
             case 315 -> {return MoveDirection.FORWARDLEFT;}
-            default -> {return MoveDirection.BACKWARD;} // tutaj wyrzuc wyjatkiem!
+            default -> throw new IllegalArgumentException("Value out of scope!");
         }
     }
 
@@ -159,7 +152,6 @@ public class Animal implements IMapElement {
                 e.printStackTrace();
             }
         }
-
     }
 
     @Override
@@ -178,19 +170,10 @@ public class Animal implements IMapElement {
             default -> throw new IllegalStateException("Unexpected value: " + this.getMapDirection());
         }
 
-
         Image image = new Image(new FileInputStream(url));
-
-        // musze zmienic tak zeby kazde zdjecie mialo ten sam rozmiar...
-        // wtedy nie bedzie problemu ze skalowaniem tego animala
         ImageView imageView = new ImageView(image);
-        if (this.getMapDirection().equals(MapDirection.NORTH) || this.getMapDirection().equals(MapDirection.SOUTH)){
-            imageView.setFitHeight(height);
-            imageView.setFitWidth(width);
-        } else {
-            imageView.setFitHeight(width);
-            imageView.setFitWidth(height);
-        }
+        imageView.setFitHeight(width);
+        imageView.setFitWidth(height);
 
         return imageView;
     }
@@ -198,15 +181,10 @@ public class Animal implements IMapElement {
     @Override
     public boolean equals(Object other){
         return this == other;
-
     }
 
     @Override
     public Label getLabel() {return new Label(Integer.toString(this.energy));}
-
-    public void setHeight(int height) {this.height = height;}
-
-    public void setWidth(int width) {this.width = width;}
 
     public void addNewChildren(Animal animal){
         this.children.add(animal);

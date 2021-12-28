@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 
 public class Grass implements IMapElement {
     private final Vector2d position;
-    public int energy; // private
+    public int energy;
 
     public Grass(Vector2d position, int energy){
         this.position = position;

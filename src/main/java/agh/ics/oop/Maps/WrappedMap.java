@@ -1,13 +1,10 @@
 package agh.ics.oop.Maps;
 
 import agh.ics.oop.AbstractClasses.AbstractWorldMap;
-import agh.ics.oop.WorldElements.Animal;
-import agh.ics.oop.WorldElements.Grass;
 import agh.ics.oop.WorldElements.Vector2d;
 
-import java.util.LinkedHashMap;
 
-// "zawinięta" mapa
+
 public class WrappedMap extends AbstractWorldMap {
 
 

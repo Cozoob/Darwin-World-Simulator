@@ -8,36 +8,47 @@ import agh.ics.oop.Interfaces.IWorldMap;
 import agh.ics.oop.Engine.MapVisualizer;
 import agh.ics.oop.WorldElements.Vector2d;
 
-import java.awt.*;
 import java.util.*;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
-    public LinkedHashMap<Vector2d, Grass> grassPositions; // protected
-    public LinkedHashMap<Vector2d, HashSet<Animal>> animals; // protected
-    public ArrayList<Animal> deadAnimals = new ArrayList<>(); // protected
-    public ArrayList<Animal> aliveAnimals; // protected
+    protected LinkedHashMap<Vector2d, Grass> grassPositions;
+    protected LinkedHashMap<Vector2d, HashSet<Animal>> animals;
+    protected ArrayList<Animal> deadAnimals = new ArrayList<>();
+    protected ArrayList<Animal> aliveAnimals;
     protected Vector2d lowerLeft = new Vector2d(0, 0);
     protected Vector2d upperRight;
-    public Vector2d jungleLowerLeft; // protected
-    public Vector2d jungleUpperRight; // protected
-    protected MapBoundary mapBoundary; // final ?
-    public ArrayList<Vector2d> freeJunglePositions = new ArrayList<>(); // protected
-    public ArrayList<Vector2d> freePrairiePositions = new ArrayList<>(); // protected
-    public int grassEnergy; // protected
-    public int amountOfGrass;
-    public int maxAnimalEnergy; // protected
-    public Random rand = new Random(); // protected
-    public int minimumEnergyToCopulate;
-    public boolean isMagic;
+    protected Vector2d jungleLowerLeft;
+    protected Vector2d jungleUpperRight;
+    protected MapBoundary mapBoundary;
+    protected ArrayList<Vector2d> freeJunglePositions = new ArrayList<>();
+    protected ArrayList<Vector2d> freePrairiePositions = new ArrayList<>();
+    protected int grassEnergy;
+    protected int amountOfGrass;
+    protected int maxAnimalEnergy;
+    protected int minimumEnergyToCopulate;
+    protected boolean isMagic;
     protected int counterOfMagic = 0;
-    public LinkedHashMap<String, Integer> genotypes = new LinkedHashMap<>();// protected
+    protected LinkedHashMap<String, Integer> genotypes = new LinkedHashMap<>();
 
-    // sprawdz jakie wartosci z inputu moga cos zepsuc... wyrzuc wtedy wyjatki
+
     public AbstractWorldMap(boolean isMagic,int minimumEnergyToCopulate,int maxAnimalEnergy ,int grassEnergy, int amountOfGrass, int width, int height, int jungleWidth, int jungleHeight){
         if (jungleHeight > height || jungleWidth > width){
-            System.out.println("ZLE");
-            // wyrzuc wyjatek!
+            throw new IllegalArgumentException("Height and width of the map cannot be smaller than jungle height and width!");
         }
+        if(jungleHeight < 0 || jungleWidth < 0 || width <= 0 || height <= 0){
+            if(width == 0 || height == 0){
+                throw new IllegalArgumentException("Width and height of the map cannot be zeros!");
+            } else {
+                throw new IllegalArgumentException("Width and height of the map and jungle cannot be negative numbers!");
+            }
+        }
+        if(minimumEnergyToCopulate < 0 ||  maxAnimalEnergy < 0 || grassEnergy < 0){
+            throw new IllegalArgumentException("Energies cannot be negative numbers!");
+        }
+        if(amountOfGrass < 0){
+            throw new IllegalArgumentException("Amount of starting grass cannot be negative number!");
+        }
+
         this.isMagic = isMagic;
         this.minimumEnergyToCopulate = minimumEnergyToCopulate;
         this.maxAnimalEnergy = maxAnimalEnergy;
@@ -73,8 +84,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         }
     }
 
-
-    // mozna by bylo zrobic jedna metoda putGrassOn(i na czym....)
     public void putGrassOnJungle(){
         if(this.freeJunglePositions.size() > 0) {
         Collections.shuffle(this.freeJunglePositions);
@@ -132,12 +141,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         } else {
             this.freePrairiePositions.remove(position);
         }
-//        System.out.println();
-//        System.out.println("FIRST CHIILD!");
-//        System.out.println(this.genotypes);
-//        System.out.println(this.genotypes);
-//        System.out.println();
-//        System.exit(1);
         return true;
     }
 
@@ -164,7 +167,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void animalsCopulate(){
         for(HashSet<Animal> hashSet : this.animals.values()){
             if(hashSet.size() > 1){
-                // TODO ZMIANA! - moze juz jest ok?
                 ArrayList<Animal> twoStrongestAnimals = getTwoStrongestAnimals(hashSet);
                 Animal animal1 = twoStrongestAnimals.get(0);
                 Animal animal2 = twoStrongestAnimals.get(1);
@@ -174,8 +176,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 if(animal1.energy < this.minimumEnergyToCopulate || animal2.energy < this.minimumEnergyToCopulate){
                     break;
                 }
-                // to zamien pozniej na throwsa po prostu?? TODO
-                // problem z ta metoda NullPointerException...! -- czy rozwiazane
                 int ratio1 = (int) Math.floor((double) animal1.energy * 100/ (animal1.energy + animal2.energy)); // ratio1 animal1.energy : (animal1.energy + animal2.energy)
                 int ratio2 = (int) Math.floor((double) animal2.energy * 100/ (animal1.energy + animal2.energy)); // ratio1 animal1.energy : (animal1.energy + animal2.energy)
 
@@ -259,8 +259,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public Vector2d getUpperRight(){return this.upperRight;}
 
-    public LinkedHashMap<Vector2d, Grass> getGrass(){return this.grassPositions;}
-
     public void updateListOfAnimals(Animal animal, Vector2d oldPosition){
         removeMovedAnimal(animal, oldPosition);
         addMovedAnimal(animal, animal.getPosition());
@@ -277,10 +275,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             Animal animal2 = arrayList.get(1);
             twoStrongestAnimals.add(animal2);
         }
-//        System.out.print("TWO STRONGEST ANIMALS: ");
-//        System.out.println(twoStrongestAnimals);
-
-
         return twoStrongestAnimals;
     }
 
@@ -424,7 +418,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             for (Animal animal : copyOfAnimals) {
                 place(animal);
             }
-            // TODO komunikat w interfejsie o magicznosci
             System.out.println("MAGIC HAPPENED!");
         }
     }
@@ -475,7 +468,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return (float) sum/numberOfAnimals;
     }
 
-    //TODO przetestuj getery z wyzej i dodaj szukanie dominujacego genotypu
     public ArrayList<Integer> getModeOfGenotypes(){
         String dominantKey = null;
         int countDominantGenotype = 0;
@@ -489,17 +481,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return decodeTheGenotype(dominantKey);
     }
 
-    // TODO stworz klase gene zeby tam trzymac takie rzeczy?
-
-    // metoda wywolywana tylko przy place oraz initialplace animals
-    public void putGenotype(Animal animal){ // TODO PRIVATE
+    private void putGenotype(Animal animal){
         ArrayList<Integer> genotype = new ArrayList<>(animal.genotype);
         String key = codeTheGenotype(genotype);
         Integer value = this.genotypes.getOrDefault(key, 0);
         this.genotypes.put(key, value + 1);
     }
 
-    public void removeGenotype(Animal animal){
+    private void removeGenotype(Animal animal){
         ArrayList<Integer> genotype = new ArrayList<>(animal.genotype);
         String key = codeTheGenotype(genotype);
         this.genotypes.put(key, this.genotypes.get(key) - 1);
@@ -545,18 +534,17 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         intsToConvert.add(counter6 + 10);
         intsToConvert.add(counter7 + 10);
 
-//        System.out.println(intsToConvert);
-        // -10 zeby dostac liczbe wystepowan danego genu
+        // value - 10 is the amount of the gene in genotype
         for(int elem : intsToConvert){
             String convertedInt = String.valueOf(elem);
             key.append(convertedInt);
         }
-//        System.out.println(key);
         return key.toString();
     }
 
     private ArrayList<Integer> decodeTheGenotype(String key){
-        if(key == null) return null; // should never happen TODO THROW!
+        if(key == null){throw new NullPointerException();} // should never happen
+
         ArrayList<Integer> genotype = new ArrayList<>();
         for(int i = 0; i < 8; i++){
             String substr = key.substring(i*2, i*2 + 2); // it takes substring from index [i*2,i*2+1]
@@ -566,8 +554,35 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 numberOfGene--;
             }
         }
-
         return genotype;
     }
 
+    public Vector2d getJungleLowerLeft() {
+        return jungleLowerLeft;
+    }
+
+    public Vector2d getJungleUpperRight() {
+        return jungleUpperRight;
+    }
+
+
+    public ArrayList<Vector2d> getFreeJunglePositions() {
+        return freeJunglePositions;
+    }
+
+    public ArrayList<Vector2d> getFreePrairiePositions() {
+        return freePrairiePositions;
+    }
+
+    public LinkedHashMap<String, Integer> getGenotypes() {
+        return genotypes;
+    }
+
+    public boolean getIsMagic(){
+        return isMagic;
+    }
+
+    public int getMaxAnimalEnergy() {
+        return maxAnimalEnergy;
+    }
 }
