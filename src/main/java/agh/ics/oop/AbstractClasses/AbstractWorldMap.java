@@ -585,4 +585,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public int getMaxAnimalEnergy() {
         return maxAnimalEnergy;
     }
+
+    public LinkedHashMap<Vector2d, Grass> getGrassPositions() {
+        return grassPositions;
+    }
 }

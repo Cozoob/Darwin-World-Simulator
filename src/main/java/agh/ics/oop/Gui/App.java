@@ -30,7 +30,6 @@ public class App extends Application {
 
     private Stage window;
     private Scene simulation;
-    private Scene initialMenu;
     private Scene menuScene;
 
     @Override
@@ -64,9 +63,14 @@ public class App extends Application {
             int rowIndex = 0;
             input.add(new HashMap<>());
 
-            addMapOptionHeader(rowIndex, offset, menu, "Map details");
-            rowIndex++;
-            addMapOptionHeader(rowIndex,offset,menu, "Map properties");
+            if(i == 0){
+                addMapOptionHeader(rowIndex, offset, menu, "WRAPPED MAP DETAILS");
+                rowIndex++;
+            } else {
+                addMapOptionHeader(rowIndex, offset, menu, "WALL MAP DETAILS");
+                rowIndex++;
+            }
+            addMapOptionHeader(rowIndex,offset,menu, "MAP PROPERTIES");
             rowIndex++;
             addMapOptionHeader(rowIndex,offset,menu, "(values must be natural numbers (integers that are greater than 0))");
             rowIndex++;
@@ -74,19 +78,19 @@ public class App extends Application {
 
             rowIndex++;
             addMapOptionLabel(rowIndex, offset, menu, "Map height");
-            addMapsOptionTextField(rowIndex, offset, menu, 25, 1, "mapHeight", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 30, 1, "mapHeight", input.get(i));
             inputNames.add("mapHeight");
             rowIndex++;
             addMapOptionLabel(rowIndex, offset, menu, "Map width");
-            addMapsOptionTextField(rowIndex, offset, menu, 25, 1, "mapWidth", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 30, 1, "mapWidth", input.get(i));
             inputNames.add("mapWidth");
             rowIndex++;
             addMapOptionLabel(rowIndex, offset, menu, "Jungle height");
-            addMapsOptionTextField(rowIndex, offset, menu, 25, 1, "jungleHeight", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 15, 1, "jungleHeight", input.get(i));
             inputNames.add("jungleHeight");
             rowIndex++;
             addMapOptionLabel(rowIndex, offset, menu, "Jungle width");
-            addMapsOptionTextField(rowIndex, offset, menu, 25, 1, "jungleWidth", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 15, 1, "jungleWidth", input.get(i));
             inputNames.add("jungleWidth");
 
             rowIndex += 1;
@@ -111,7 +115,7 @@ public class App extends Application {
 
             rowIndex += 1;
             addMapOptionLabel(rowIndex, offset, menu, "Animals' maximum energy");
-            addMapsOptionTextField(rowIndex, offset, menu, 80, 0,"maxAnimalEnergy", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 180, 0,"maxAnimalEnergy", input.get(i));
             inputNames.add("maxAnimalEnergy");
 
             rowIndex += 1;
@@ -127,12 +131,12 @@ public class App extends Application {
 
             rowIndex += 1;
             addMapOptionLabel(rowIndex, offset, menu, "Amount of starting animals");
-            addMapsOptionTextField(rowIndex, offset, menu, 100, 0, "amountStartingAnimals", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 20, 0, "amountStartingAnimals", input.get(i));
             inputNames.add("amountStartingAnimals");
 
             rowIndex += 1;
             addMapOptionLabel(rowIndex, offset, menu, "Amount of starting grass");
-            addMapsOptionTextField(rowIndex, offset, menu, 1, 0, "amountGrass", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 10, 0, "amountGrass", input.get(i));
             inputNames.add("amountGrass");
 
             rowIndex += 1;
@@ -164,7 +168,11 @@ public class App extends Application {
                         mapInputs.get("mapHeight") - mapInputs.get("jungleHeight") < 2)
                     return;
             }
-            // showSimulation(input, inputNames);
+            try {
+                showSimulation(input, inputNames);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         } );
 
 
@@ -172,7 +180,7 @@ public class App extends Application {
         GridPane.setHalignment(submit, HPos.CENTER);
 
         window.setTitle("The simulation (settings)");
-        window.setScene(initialMenu);
+        window.setScene(menuScene);
     }
 
     private void addMapOptionHeader(int rowIndex,int offset,  GridPane menu, String text){
@@ -237,7 +245,7 @@ public class App extends Application {
         menu.add(hBox, offset, rowIndex, 2, 1);
     }
 
-    private void showSimulation(List<Map<String, Integer>> inputList, Set<String> inputNames) {
+    private void showSimulation(List<Map<String, Integer>> inputList, Set<String> inputNames) throws FileNotFoundException {
         GridPane gridPane = new GridPane();
 
         for(int i = 0; i < 2; i++){
@@ -253,17 +261,16 @@ public class App extends Application {
         gridPane.setGridLinesVisible(true);
 
         // set up the WallMap
-        Map<String, Integer> input1 = inputList.get(0);
+        Map<String, Integer> input1 = inputList.get(1);
         boolean isMagic1 = input1.get("worldType") == 1;
         WallMap wallMap = new WallMap(isMagic1, input1.get("minEnergyToCopulate"), input1.get("maxAnimalEnergy"), input1.get("grassEnergy"), input1.get("amountGrass"), input1.get("mapWidth"), input1.get("mapHeight"), input1.get("jungleWidth"),input1.get("jungleHeight"));
-        //        WallMap wallMap = new WallMap(isMagic2, minimumEnergyToCopulate2, maxAnimalEnergy2, grassEnergy2, amountOfGrass2, width2, height2, jungleWidth2, jungleHeight2);
         SimulationEngine engine1 = new SimulationEngine(wallMap, 1, input1.get("AnimalsStartingEnergy"), input1.get("amountStartingAnimals"));
         engine1.setMoveDelay(input1.get("dayDelay"));
 
         // to od Rafała gdzie jest SimulationPane
-//        Simulation simulation1 = new Simulation(wallMap, engine1, input1, inputNames);
+        Simulation simulation1 = new Simulation(wallMap, engine1, input1, inputNames);
 
-//        gridPane.add(simulation1.simulationPane, 0, 0);
+        gridPane.add(simulation1.getSimulationPane(), 0, 0);
 
         // set up the WrappedMap
         Map<String, Integer> input2 = inputList.get(0);
@@ -274,11 +281,12 @@ public class App extends Application {
         engine2.setMoveDelay(input2.get("dayDelay"));
 
         // to od Rafała gdzie jest SimulationPane
-//        Simulation simulation2 = new Simulation(wallMap, engine2, input2, inputNames);
+        Simulation simulation2 = new Simulation(wallMap, engine2, input2, inputNames);
 
-//        gridPane.add(simulation2.simulationPane, 0, 0);
+        gridPane.add(simulation2.getSimulationPane(), 0, 0);
 
-        simulation = new Scene(gridPane, 2000, 1000);
+        simulation = new Scene(gridPane, 1800, 900);
+        window.setTitle("The simulation");
         window.setScene(simulation);
         window.show();
     }
