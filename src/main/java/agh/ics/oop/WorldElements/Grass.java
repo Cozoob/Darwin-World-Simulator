@@ -11,7 +11,9 @@ import java.io.FileNotFoundException;
 public class Grass implements IMapElement {
     private final Vector2d position;
     public int energy;
-    private Image image;
+    private final Image image;
+    private double width = 50;
+    private double height = 50;
 
     public Grass(Vector2d position, int energy) throws FileNotFoundException {
         this.position = position;
@@ -25,15 +27,20 @@ public class Grass implements IMapElement {
 
     @Override
     public ImageView getImageView() throws FileNotFoundException {
-        int width = 50;
-        int height = 50;
-
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(height);
         imageView.setFitWidth(width);
         return imageView;
     }
 
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
     @Override
-    public Label getLabel() {return new Label(this.getPosition().toString());}
+    public Label getLabel() {return new Label("");}
 }

@@ -22,8 +22,8 @@ public class Animal implements IMapElement {
     private MapDirection mapDirection;
     private final AbstractWorldMap map;
     private final ArrayList<IPositionChangeObserver> positionObservers = new ArrayList<>();
-    private int width = 60;
-    private int height = 60;
+    private double width = 60;
+    private double height = 60;
     public int energy;
     public ArrayList<Integer> genotype = new ArrayList<>();
     public boolean isAlive = true;
@@ -180,6 +180,14 @@ public class Animal implements IMapElement {
         imageView.setFitWidth(height);
 
         return imageView;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 
     @Override

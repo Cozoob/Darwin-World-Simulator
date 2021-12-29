@@ -18,6 +18,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 
@@ -26,63 +28,16 @@ import java.util.*;
 
 
 public class App extends Application implements IPositionChangeObserver {
-    AbstractWorldMap map1;
-    AbstractWorldMap map2;
-    SimulationEngine engine1;
-    SimulationEngine engine2;
-    GridPane gridPane1 = new GridPane();
-    GridPane gridPane2 = new GridPane();
-    Scene menuScene;
+    private AbstractWorldMap map1;
+    private AbstractWorldMap map2;
+    private final GridPane gridPane1 = new GridPane();
+    private final GridPane gridPane2 = new GridPane();
+    private Scene menuScene;
 
     @Override
-    public void start(Stage primaryStage) throws IllegalArgumentException, FileNotFoundException {
+    public void start(Stage primaryStage) throws IllegalArgumentException{
         showMapsOptions(primaryStage);
     }
-
-//    @Override
-//    public void init() throws IllegalArgumentException {
-//        // set up the first map
-//        boolean isMagic1 = true;
-//        int minimumEnergyToCopulate1 = 5;
-//        int maxAnimalEnergy1 = 20;
-//        int grassEnergy1 = 5;
-//        int amountOfGrass1 = 2;
-//        int width1 = 10;
-//        int height1 = 10;
-//        int jungleWidth1 = 5;
-//        int jungleHeight1 = 5;
-//        WrappedMap wrappedMap = new WrappedMap(isMagic1,minimumEnergyToCopulate1,maxAnimalEnergy1, grassEnergy1, amountOfGrass1, width1, height1, jungleWidth1, jungleHeight1);
-//        this.map1 = wrappedMap;
-//
-//        // set up the second map
-//        boolean isMagic2 = true;
-//        int minimumEnergyToCopulate2= 5;
-//        int maxAnimalEnergy2 = 20;
-//        int grassEnergy2 = 5;
-//        int amountOfGrass2 = 2;
-//        int width2 = 10;
-//        int height2 = 10;
-//        int jungleWidth2 = 5;
-//        int jungleHeight2 = 5;
-//        WallMap wallMap = new WallMap(isMagic2,minimumEnergyToCopulate2,maxAnimalEnergy2, grassEnergy2, amountOfGrass2, width2, height2, jungleWidth2, jungleHeight2);
-//        this.map2 = wallMap;
-//
-//        // set up the engine1
-//        int days1 = 20;
-//        int animalStartingEnergy1 = 20;
-//        int amountStartingAnimals1 = 10;
-//        SimulationEngine engine1 = new SimulationEngine(wrappedMap, days1, animalStartingEnergy1, amountStartingAnimals1);
-//        this.engine1 = engine1;
-//        engine1.setMoveDelay(2000);
-//
-//        // set up the engine2
-//        int days2 = 20;
-//        int animalStartingEnergy2 = 20;
-//        int amountStartingAnimals2 = 10;
-//        SimulationEngine engine2 = new SimulationEngine(wallMap, days2, animalStartingEnergy2, amountStartingAnimals2);
-//        this.engine2 = engine2;
-//        engine2.setMoveDelay(2000);
-//    }
 
     private void drawGrid(AbstractWorldMap map, GridPane gridPane) throws FileNotFoundException {
 
@@ -92,8 +47,11 @@ public class App extends Application implements IPositionChangeObserver {
         gridPane.getRowConstraints().clear();
         gridPane.getChildren().clear();
 
-        int rowSize = 60;
-        int columnSize = 60;
+        // one map is always 500x500
+        int amountOfRows = map.getUpperRight().y - map.getLowerLeft().y;
+        int amountOfColumns = map.getUpperRight().x - map.getLowerLeft().x;
+        double rowSize = (double)500 / amountOfRows;
+        double columnSize = (double)500 / amountOfColumns;
 
         Label label = new Label("y\\x");
         gridPane.add(label, 0, 0, 1, 1);
@@ -122,6 +80,19 @@ public class App extends Application implements IPositionChangeObserver {
             GridPane.setHalignment(index, HPos.CENTER);
         }
 
+        for(int x = map.getLowerLeft().x; x <= map.getUpperRight().x; x++){
+            for(int y = map.getLowerLeft().y; y <= map.getUpperRight().y; y++){
+                GridPane pane = new GridPane();
+                if(map.getJungleUpperRight().x >= x && x >= map.getJungleLowerLeft().x && map.getJungleUpperRight().y >= y && y >= map.getJungleLowerLeft().y){
+                    pane.setBackground(new Background(new BackgroundFill(Color.DARKGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+                } else {
+                    pane.setBackground(new Background(new BackgroundFill(Color.GREENYELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+                }
+                gridPane.add(pane, y + 1, x + 1);
+                GridPane.setHalignment(pane, HPos.CENTER);
+            }
+        }
+
         // add grass and animal icons
         // LinkedHashMap<Vector2d, Animal> animals = map.getAnimals();
         LinkedHashMap<Vector2d, Grass> grasses = map.getGrassPositions();
@@ -130,14 +101,19 @@ public class App extends Application implements IPositionChangeObserver {
         ArrayList<Animal> animalsValues = new ArrayList<>(map.getAliveAnimals());
 
         for(Grass grass : grassesValues){
+            grass.setHeight(columnSize * 3 / 4);
+            grass.setWidth(rowSize * 3 / 4);
             GuiElementBox animalIcon = new GuiElementBox(grass);
             gridPane.add(animalIcon.vBox, grass.getPosition().x + 1 - lowerLeft.x, upperRight.y - grass.getPosition().y + 1, 1, 1);
         }
 
         for(Animal animal : animalsValues){
+            animal.setHeight(columnSize * 3 / 4);
+            animal.setWidth(rowSize * 3 / 4);
             GuiElementBox animalIcon = new GuiElementBox(animal);
             gridPane.add(animalIcon.vBox, animal.getPosition().x + 1 - lowerLeft.x, upperRight.y - animal.getPosition().y + 1, 1, 1);
         }
+
     }
 
     private void showSimulation(Stage primaryStage, List<Map<String, Integer>> inputList) throws FileNotFoundException {
@@ -191,7 +167,9 @@ public class App extends Application implements IPositionChangeObserver {
 //        gridPane.setAlignment(Pos.CENTER);
 
         HBox hBox = new HBox();
-//        TextField textField = new TextField();
+//        Text mapName1 = new Text("Wall Map");
+//        Text mapName2 = new Text("Wrapped Map");
+//        hBox.getChildren().addAll(mapName1, mapName2);
 
         VBox vBox = new VBox();
         vBox.getChildren().addAll(hBox, hBox0);
@@ -220,10 +198,15 @@ public class App extends Application implements IPositionChangeObserver {
         primaryStage.show();
 
 
+
         Thread thread1 = new Thread(engine1);
         Thread thread2 = new Thread(engine2);
         thread1.start();
         thread2.start();
+    }
+
+    private void updateDayText(){
+
     }
 
     @Override
@@ -239,8 +222,6 @@ public class App extends Application implements IPositionChangeObserver {
     }
 
     private void showMapsOptions(Stage primaryStage){
-        //int menuWidth = 1300;
-        //int menuHeight = 800;
         GridPane menu = new GridPane();
         menu.setAlignment(Pos.CENTER);
 
@@ -301,7 +282,7 @@ public class App extends Application implements IPositionChangeObserver {
 
             rowIndex += 1;
             addMapOptionLabel(rowIndex, offset, menu, "Grass energy");
-            addMapsOptionTextField(rowIndex, offset, menu, 20, 0, "grassEnergy", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 5, 0, "grassEnergy", input.get(i));
             inputNames.add("grassEnergy");
 
             rowIndex += 1;
@@ -311,12 +292,12 @@ public class App extends Application implements IPositionChangeObserver {
 
             rowIndex += 1;
             addMapOptionLabel(rowIndex, offset, menu, "Animals' maximum energy");
-            addMapsOptionTextField(rowIndex, offset, menu, 180, 0,"maxAnimalEnergy", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 50, 0,"maxAnimalEnergy", input.get(i));
             inputNames.add("maxAnimalEnergy");
 
             rowIndex += 1;
             addMapOptionLabel(rowIndex, offset, menu, "Animals' starting energy");
-            addMapsOptionTextField(rowIndex, offset, menu, 100, 0, "AnimalsStartingEnergy", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 30, 0, "AnimalsStartingEnergy", input.get(i));
             inputNames.add("AnimalsStartingEnergy");
 
             rowIndex += 1;
@@ -327,7 +308,7 @@ public class App extends Application implements IPositionChangeObserver {
 
             rowIndex += 1;
             addMapOptionLabel(rowIndex, offset, menu, "Amount of starting animals");
-            addMapsOptionTextField(rowIndex, offset, menu, 10, 0, "amountStartingAnimals", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 20, 0, "amountStartingAnimals", input.get(i));
             inputNames.add("amountStartingAnimals");
 
             rowIndex += 1;
@@ -343,7 +324,7 @@ public class App extends Application implements IPositionChangeObserver {
 
             rowIndex += 1;
             addMapOptionLabel(rowIndex, offset, menu, "Time between days [ms]");
-            addMapsOptionTextField(rowIndex, offset, menu, 800, 1, "dayDelay", input.get(i));
+            addMapsOptionTextField(rowIndex, offset, menu, 1000, 1, "dayDelay", input.get(i));
             inputNames.add("dayDelay");
         }
 
