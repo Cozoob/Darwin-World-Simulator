@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -51,6 +52,10 @@ public class App extends Application {
     private HBox animalStats2 = new HBox();
     private int counterOfMagic1 = 0;
     private int counterOfMagic2 = 0;
+    private boolean isAnimal1Tracked = false;
+    private boolean isAnimal2Tracked = false;
+    private Animal animal1Tracked;
+    private Animal animal2Tracked;
 
     @Override
     public void start(Stage primaryStage) throws IllegalArgumentException{
@@ -129,7 +134,42 @@ public class App extends Application {
             animal.setHeight(columnSize * 3 / 4);
             animal.setWidth(rowSize * 3 / 4);
             GuiElementBox animalIcon = new GuiElementBox(animal);
-            gridPane.add(animalIcon.vBox, animal.getPosition().x + 1 - lowerLeft.x, upperRight.y - animal.getPosition().y + 1, 1, 1);
+
+            Pane pane = new Pane();
+            pane.getChildren().addAll(animalIcon.vBox);
+
+            pane.setOnMouseClicked(event -> {
+                if(map instanceof WallMap){
+                    //pane.setBackground(new Background(new BackgroundFill(Color.MEDIUMVIOLETRED, CornerRadii.EMPTY, Insets.EMPTY)));
+                    isAnimal1Tracked = true;
+                    animal1Tracked = animal;
+                } else {
+                    //pane.setBackground(new Background(new BackgroundFill(Color.MEDIUMVIOLETRED, CornerRadii.EMPTY, Insets.EMPTY)));
+                    isAnimal2Tracked = true;
+                    animal2Tracked = animal;
+                }
+            });
+
+            if(isAnimal1Tracked && animal1Tracked.equals(animal)){
+                Label labelTracked = new Label("  !");
+                labelTracked.setTextFill(Color.WHITE);
+                pane.setBackground(new Background(new BackgroundFill(Color.MEDIUMVIOLETRED, CornerRadii.EMPTY, Insets.EMPTY)));
+                pane.getChildren().addAll(labelTracked);
+            } else if(isAnimal2Tracked && animal2Tracked.equals(animal)){
+                Label labelTracked = new Label("  !");
+                labelTracked.setTextFill(Color.WHITE);
+                pane.setBackground(new Background(new BackgroundFill(Color.MEDIUMVIOLETRED, CornerRadii.EMPTY, Insets.EMPTY)));
+                pane.getChildren().addAll(labelTracked);
+            }
+
+
+            gridPane.add(pane, animal.getPosition().x + 1 - lowerLeft.x, upperRight.y - animal.getPosition().y + 1, 1, 1);
+        }
+        if(isAnimal1Tracked){
+            drawAnimalStats(animalStats1, animal1Tracked);
+        }
+        if(isAnimal2Tracked){
+            drawAnimalStats(animalStats2, animal2Tracked);
         }
 
     }
@@ -222,11 +262,17 @@ public class App extends Application {
         gridPane2.setPadding(new Insets(10));
 
         VBox mapBox1 = new VBox();
-        mapBox1.getChildren().addAll(hBox1, new Text("MODE OF GENOTYPES"), mapStatistics1.getModeOfGenotypes());
+        VBox gen1 = new VBox();
+        gen1.getChildren().addAll(new Text("MODE OF GENOTYPES"), new Text("Animals (*) on map!"), mapStatistics1.getModeOfGenotypes());
+        mapBox1.getChildren().addAll(hBox1, gen1);
         mapBox1.setAlignment(Pos.CENTER);
+        gen1.setAlignment(Pos.CENTER);
         VBox mapBox2 = new VBox();
-        mapBox2.getChildren().addAll(hBox2, new Text("MODE OF GENOTYPES"), mapStatistics2.getModeOfGenotypes());
+        VBox gen2 = new VBox();
+        gen2.getChildren().addAll(new Text("MODE OF GENOTYPES"), new Text("Animals (*) on map!"), mapStatistics2.getModeOfGenotypes());
+        mapBox2.getChildren().addAll(hBox2, gen2);
         mapBox2.setAlignment(Pos.CENTER);
+        gen2.setAlignment(Pos.CENTER);
 
         if(map1.getIsMagic()){
             mapBox1.getChildren().add(magicText1);
@@ -236,6 +282,9 @@ public class App extends Application {
             mapBox2.getChildren().add( magicText2);
         }
         mapBox2.getChildren().add( animalStats2);
+
+        mapBox1.setSpacing(20);
+        mapBox2.setSpacing(20);
 
         hBox0.getChildren().addAll(mapBox1, mapBox2);
 
@@ -328,7 +377,6 @@ public class App extends Application {
                 }
                 if(map1.getIsMagic() && map1.getCounterOfMagic() != counterOfMagic1){
                     counterOfMagic1 = map1.getCounterOfMagic();
-//                    System.out.println("AAAA");
                     magicText1.setText("MAGIC HAPPENED AT DAY " + engine1.getCurrentDay() + "!");
                 }
 
@@ -341,6 +389,28 @@ public class App extends Application {
                 e.printStackTrace();
             }
         } );
+    }
+
+    private void drawAnimalStats(HBox animalStats, Animal animal){
+        animalStats.getChildren().clear();
+
+        VBox vBox = new VBox();
+
+        Text title = new Text("TRACKED ANIMAL (!)");
+        Text genUp = new Text("ITS GENOTYPE:");
+        Collections.sort(animal.genotype);
+        Text genDown = new Text(animal.getGenotype().toString());
+        Text children = new Text("Amount of children: " +  String.valueOf(animal.getNumberOfChildren()));
+        Text descendant = new Text("Amount of descendant: " + String.valueOf(animal.getNumberOfDescendants()));
+        vBox.getChildren().addAll(title, genUp, genDown, children, descendant);
+        if(!animal.isAlive){
+            Text deathDay = new Text("The death day: " + String.valueOf(animal.daysAlive));
+            vBox.getChildren().add(deathDay);
+        }
+
+        vBox.setAlignment(Pos.CENTER);
+        animalStats.getChildren().add(vBox);
+        animalStats.setAlignment(Pos.CENTER);
     }
 
     private void showMapsOptions(Stage primaryStage){

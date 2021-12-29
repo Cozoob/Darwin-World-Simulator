@@ -212,4 +212,12 @@ public class Animal implements IMapElement {
     }
 
     public int getNumberOfChildren() {return this.children.size();}
+
+    public int getNumberOfDescendants(){
+        int counter = getNumberOfChildren();
+        for(Animal animal : children){
+            counter += animal.getNumberOfDescendants();
+        }
+        return counter;
+    }
 }
