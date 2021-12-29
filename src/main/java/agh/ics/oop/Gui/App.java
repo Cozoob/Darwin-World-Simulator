@@ -40,7 +40,11 @@ public class App extends Application {
     private final Text day2 = new Text("DAY: 0");
     private MapStatistics mapStatistics1;
     private MapStatistics mapStatistics2;
+    private CSVWriter CSVWriterMap1;
+    private CSVWriter CSVWriterMap2;
     private Scene menuScene;
+    private boolean isMap1EndWork = false;
+    private boolean isMap2EndWork = false;
 
     @Override
     public void start(Stage primaryStage) throws IllegalArgumentException{
@@ -175,8 +179,8 @@ public class App extends Application {
         drawGrid(this.map2, this.gridPane2);
 
         updateDayText();
-        setUpButton(startStopButton1, engine1);
-        setUpButton(startStopButton2, engine2);
+        setUpButton(startStopButton1, engine1, map1);
+        setUpButton(startStopButton2, engine2, map2);
 
         Text mapName1 = new Text("WALL MAP");
         VBox vBox1 = new VBox();
@@ -251,7 +255,11 @@ public class App extends Application {
         primaryStage.setFullScreen(true);
         primaryStage.show();
 
+        CSVWriterMap1 = new CSVWriter(map1, engine1);
+        CSVWriterMap2 = new CSVWriter(map2, engine2);
 
+        CSVWriterMap1.generateData(map1, engine1);
+        CSVWriterMap2.generateData(map2, engine2);
 
         Thread thread1 = new Thread(engine1);
         Thread thread2 = new Thread(engine2);
@@ -259,18 +267,27 @@ public class App extends Application {
         thread2.start();
     }
 
-    private void setUpButton(Button button, SimulationEngine engine){
+    private void setUpButton(Button button, SimulationEngine engine, AbstractWorldMap map){
         button.setOnAction( (ActionEvent event) ->{
             if(engine.isRunning){
                 engine.pause();
                 button.setText("RESUME");
                 engine.isRunning = false;
+                saveData(map);
             } else {
                 engine.resumeRun();
                 button.setText("PAUSE");
                 engine.isRunning = true;
             }
         });
+    }
+
+    private void saveData(AbstractWorldMap map){
+        if(map instanceof WallMap){
+            CSVWriterMap1.generateData(map, engine1);
+        } else {
+            CSVWriterMap2.generateData(map, engine2);
+        }
     }
 
     private void updateDayText(){
@@ -299,6 +316,16 @@ public class App extends Application {
                 updateDayText();
                 mapStatistics1.updateData(engine1.getCurrentDay());
                 mapStatistics2.updateData(engine2.getCurrentDay());
+                if(!map1.isAnyAliveAnimal() && !isMap1EndWork){
+                    isMap1EndWork = true;
+                    saveData(map1);
+                    CSVWriterMap1.write();
+                }
+                if(!map2.isAnyAliveAnimal() && !isMap2EndWork){
+                    isMap2EndWork = true;
+                    saveData(map2);
+                    CSVWriterMap2.write();
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

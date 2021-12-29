@@ -1,0 +1,6 @@
+DAY, AnimalCounter, GrassCounter, AverageEnergy, AverageLifeSpan, AverageNumberOfChildren
+0, 20, 5, 10.0, 0.0, 0.0
+2, 28, 11, 4.714286, 0.0, 0.5714286
+4, 28, 15, 2.7142856, 0.0, 0.5714286
+7, 5, 20, 2.6, 5.9565215, 0.5714286
+17, 0, 38, 0.0, 6.785714, 0.5714286
