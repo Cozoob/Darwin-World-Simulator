@@ -3,15 +3,19 @@ package agh.ics.oop.Engine;
 import agh.ics.oop.AbstractClasses.AbstractWorldMap;
 
 import agh.ics.oop.Interfaces.IEngine;
+import agh.ics.oop.Interfaces.IMapObserver;
 import agh.ics.oop.WorldElements.Animal;
 import agh.ics.oop.WorldElements.Vector2d;
 
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class SimulationEngine extends Thread implements IEngine, Runnable{
+public class SimulationEngine implements IEngine, Runnable{
     private final AbstractWorldMap map;
+    private final List<IMapObserver> observers = new ArrayList<>();
     private int moveDelay = 1000;
+    private int currentDay;
+    public boolean isRunning = true;
     public int days;
     public int animalStartingEnergy;
     public int amountStartingAnimals;
@@ -48,14 +52,24 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
     @Override
     public synchronized void run() {
 
-        for (int day = 0; day <= days; day++){
+        for (int day = 0; day <= days; day++) {
+            synchronized (this) {
+                while (!isRunning) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException e) {
+                        // just continue
+                    }
+                }
+            }
+            currentDay = day;
             System.out.print("DAY: ");
             System.out.println(day);
-            if(map.getAliveAnimals().isEmpty()){
+            if (map.getAliveAnimals().isEmpty()) {
                 break;
             }
             ArrayList<Animal> currentAliveAnimals = new ArrayList<>(map.getAliveAnimals());
-            for(Animal animal : currentAliveAnimals){
+            for (Animal animal : currentAliveAnimals) {
                 animal.move();
             }
             map.animalsEatGrass();
@@ -63,13 +77,13 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
             map.putGrassOnJungle();
             map.putGrassOnPrairie();
             // TODO do usuniecia printy!
-            System.out.println(map);
-            System.out.println(map.getModeOfGenotypes());
+            //System.out.println(map);
+            //System.out.println(map.getModeOfGenotypes());
             int counter = 0;
-            for(Integer number : map.getGenotypes().values()){
+            for (Integer number : map.getGenotypes().values()) {
                 counter += number;
             }
-            if(counter != map.getAliveAnimals().size()){
+            if (counter != map.getAliveAnimals().size()) {
                 System.out.println(map.getAliveAnimals());
                 System.out.println(counter);
                 System.exit(1);
@@ -79,10 +93,14 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if(!(map.getAliveAnimals().isEmpty())){
+            if (!(map.getAliveAnimals().isEmpty())) {
                 days++;
             }
+            for (IMapObserver observer: observers) {
+                observer.mapChanged();
+            }
         }
+
     }
 
     public void setMoveDelay(int moveDelay) {this.moveDelay = moveDelay;}
@@ -95,5 +113,22 @@ public class SimulationEngine extends Thread implements IEngine, Runnable{
         randomY = rand.nextInt(map.getJungleUpperRight().y - map.getJungleLowerLeft().y + 1) + map.getJungleLowerLeft().y;
 
         return new Vector2d(randomX, randomY);
+    }
+
+    public int getCurrentDay() {
+        return currentDay;
+    }
+
+    public void pause(){
+        isRunning = false;
+    }
+
+    public synchronized void resumeRun(){
+        this.notify();
+        isRunning = true;
+    }
+
+    public void addObserver(IMapObserver observer){
+        observers.add(observer);
     }
 }

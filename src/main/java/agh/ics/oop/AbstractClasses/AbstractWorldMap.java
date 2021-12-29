@@ -598,4 +598,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public LinkedHashMap<Vector2d, Grass> getGrassPositions() {
         return grassPositions;
     }
+
+    public boolean isAnyAliveAnimal() {return !aliveAnimals.isEmpty();}
 }

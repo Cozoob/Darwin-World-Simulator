@@ -2,7 +2,7 @@ package agh.ics.oop.Gui;
 
 import agh.ics.oop.AbstractClasses.AbstractWorldMap;
 import agh.ics.oop.Engine.SimulationEngine;
-import agh.ics.oop.Interfaces.IPositionChangeObserver;
+import agh.ics.oop.Interfaces.IMapObserver;
 import agh.ics.oop.Maps.WallMap;
 import agh.ics.oop.Maps.WrappedMap;
 import agh.ics.oop.WorldElements.Animal;
@@ -27,11 +27,19 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 
-public class App extends Application implements IPositionChangeObserver {
+public class App extends Application {
     private AbstractWorldMap map1;
     private AbstractWorldMap map2;
     private final GridPane gridPane1 = new GridPane();
     private final GridPane gridPane2 = new GridPane();
+    private SimulationEngine engine1;
+    private SimulationEngine engine2;
+    private final Button startStopButton1 = new Button("PAUSE");
+    private final Button startStopButton2 = new Button("PAUSE");
+    private final Text day1 = new Text("DAY: 0");
+    private final Text day2 = new Text("DAY: 0");
+    private MapStatistics mapStatistics1;
+    private MapStatistics mapStatistics2;
     private Scene menuScene;
 
     @Override
@@ -136,7 +144,7 @@ public class App extends Application implements IPositionChangeObserver {
         boolean isMagic1 = input1.get("worldType") == 1;
         WallMap wallMap = new WallMap(isMagic1, input1.get("minEnergyToCopulate"), input1.get("maxAnimalEnergy"), input1.get("grassEnergy"), input1.get("amountGrass"), input1.get("mapWidth"), input1.get("mapHeight"), input1.get("jungleWidth"),input1.get("jungleHeight"));
         map1 = wallMap;
-        SimulationEngine engine1 = new SimulationEngine(wallMap, 1, input1.get("AnimalsStartingEnergy"), input1.get("amountStartingAnimals"));
+        engine1 = new SimulationEngine(wallMap, 1, input1.get("AnimalsStartingEnergy"), input1.get("amountStartingAnimals"));
         engine1.setMoveDelay(input1.get("dayDelay"));
 
         // set up the WrappedMap
@@ -144,27 +152,72 @@ public class App extends Application implements IPositionChangeObserver {
         boolean isMagic2 = input2.get("worldType") == 1;
         WrappedMap wrappedMap = new WrappedMap(isMagic2, input2.get("minEnergyToCopulate"), input2.get("maxAnimalEnergy"), input2.get("grassEnergy"), input2.get("amountGrass"), input2.get("mapWidth"), input2.get("mapHeight"), input2.get("jungleWidth"),input2.get("jungleHeight"));
         map2 = wrappedMap;
-        SimulationEngine engine2 = new SimulationEngine(wrappedMap, 1, input2.get("AnimalsStartingEnergy"), input2.get("amountStartingAnimals"));
+        engine2 = new SimulationEngine(wrappedMap, 1, input2.get("AnimalsStartingEnergy"), input2.get("amountStartingAnimals"));
         engine2.setMoveDelay(input2.get("dayDelay"));
 
 
 
-        for (Animal animal : map1.getAliveAnimals()){
-            animal.addObserver(this);
-        }
+        engine1.addObserver(new IMapObserver() {
+            @Override
+            public void mapChanged() {
+                updateMap();
+            }
+        });
+
+        engine2.addObserver(new IMapObserver() {
+            @Override
+            public void mapChanged() {
+                updateMap();
+            }
+        });
 
         drawGrid(this.map1, this.gridPane1);
         drawGrid(this.map2, this.gridPane2);
 
+        updateDayText();
+        setUpButton(startStopButton1, engine1);
+        setUpButton(startStopButton2, engine2);
+
+        Text mapName1 = new Text("WALL MAP");
+        VBox vBox1 = new VBox();
+        vBox1.setAlignment(Pos.CENTER);
+        vBox1.getChildren().addAll(mapName1, day1, gridPane1, startStopButton1);
+
+        Text mapName2 = new Text("WRAPPED MAP");
+        VBox vBox2 = new VBox();
+        vBox2.setAlignment(Pos.CENTER);
+        vBox2.getChildren().addAll(mapName2, day2, gridPane2, startStopButton2);
+
         HBox hBox0 = new HBox();
 
-        hBox0.getChildren().addAll(gridPane1,gridPane2);
-        gridPane1.setAlignment(Pos.TOP_LEFT);
-        gridPane2.setAlignment(Pos.TOP_RIGHT);
+        // add statistics to maps
+        mapStatistics1 = new MapStatistics(map1);
+        mapStatistics2 = new MapStatistics(map2);
+//        VBox statsBox1 = new VBox();
+//        statsBox1.getChildren().addAll(mapStatistics1.lineChart, mapStatistics1.getModeOfGenotypes());
+//        VBox statsBox2 = new VBox();
+//        statsBox2.getChildren().addAll(mapStatistics2.lineChart, mapStatistics2.getModeOfGenotypes());
+
+
+//        hBox0.getChildren().addAll(mapStatistics1.lineChart, vBox1, vBox2, mapStatistics2.lineChart);
+//        gridPane1.setPadding(new Insets(10));
+//        gridPane2.setPadding(new Insets(10));
+
+        HBox hBox1 = new HBox();
+        hBox1.getChildren().addAll(mapStatistics1.lineChart, vBox1);
+        HBox hBox2 = new HBox();
+        hBox2.getChildren().addAll(vBox2, mapStatistics2.lineChart);
+
         gridPane1.setPadding(new Insets(10));
         gridPane2.setPadding(new Insets(10));
-        // set up the scene
-//        gridPane.setAlignment(Pos.CENTER);
+
+        VBox mapBox1 = new VBox();
+        mapBox1.getChildren().addAll(hBox1, mapStatistics1.getModeOfGenotypes());
+        VBox mapBox2 = new VBox();
+        mapBox2.getChildren().addAll(hBox2, mapStatistics2.getModeOfGenotypes());
+
+
+        hBox0.getChildren().addAll(mapBox1, mapBox2); // do zmiany
 
         HBox hBox = new HBox();
 //        Text mapName1 = new Text("Wall Map");
@@ -195,6 +248,7 @@ public class App extends Application implements IPositionChangeObserver {
         Scene scene = new Scene(border);
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
+        primaryStage.setFullScreen(true);
         primaryStage.show();
 
 
@@ -205,16 +259,46 @@ public class App extends Application implements IPositionChangeObserver {
         thread2.start();
     }
 
-    private void updateDayText(){
-
+    private void setUpButton(Button button, SimulationEngine engine){
+        button.setOnAction( (ActionEvent event) ->{
+            if(engine.isRunning){
+                engine.pause();
+                button.setText("RESUME");
+                engine.isRunning = false;
+            } else {
+                engine.resumeRun();
+                button.setText("PAUSE");
+                engine.isRunning = true;
+            }
+        });
     }
 
-    @Override
-    public synchronized void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) {
+    private void updateDayText(){
+        day1.setText("DAY: " + engine1.getCurrentDay());
+        day2.setText("DAY: " + engine2.getCurrentDay());
+    }
+
+//    @Override
+//    public synchronized void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) {
+//        Platform.runLater( () ->{
+//            try {
+//                drawGrid(this.map1, this.gridPane1);
+//                drawGrid(this.map2, this.gridPane2);
+//                updateDayText();
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//        } );
+//    }
+
+    public synchronized void updateMap(){
         Platform.runLater( () ->{
             try {
                 drawGrid(this.map1, this.gridPane1);
                 drawGrid(this.map2, this.gridPane2);
+                updateDayText();
+                mapStatistics1.updateData(engine1.getCurrentDay());
+                mapStatistics2.updateData(engine2.getCurrentDay());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
