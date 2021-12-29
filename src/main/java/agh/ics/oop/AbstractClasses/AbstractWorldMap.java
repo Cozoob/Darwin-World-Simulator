@@ -427,8 +427,12 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             for (Animal animal : copyOfAnimals) {
                 place(animal);
             }
-            System.out.println("MAGIC HAPPENED!");
+//            System.out.println("MAGIC HAPPENED!");
         }
+    }
+
+    public int getCounterOfMagic() {
+        return counterOfMagic;
     }
 
     public int getNumberOfAliveAnimals() {return this.aliveAnimals.size();}

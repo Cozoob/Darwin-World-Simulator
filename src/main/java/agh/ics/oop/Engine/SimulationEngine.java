@@ -63,8 +63,6 @@ public class SimulationEngine implements IEngine, Runnable{
                 }
             }
             currentDay = day;
-            System.out.print("DAY: ");
-            System.out.println(day);
             if (map.getAliveAnimals().isEmpty()) {
                 break;
             }
@@ -76,17 +74,8 @@ public class SimulationEngine implements IEngine, Runnable{
             map.animalsCopulate();
             map.putGrassOnJungle();
             map.putGrassOnPrairie();
-            // TODO do usuniecia printy!
-            //System.out.println(map);
-            //System.out.println(map.getModeOfGenotypes());
-            int counter = 0;
-            for (Integer number : map.getGenotypes().values()) {
-                counter += number;
-            }
-            if (counter != map.getAliveAnimals().size()) {
-                System.out.println(map.getAliveAnimals());
-                System.out.println(counter);
-                System.exit(1);
+            if(map.getIsMagic() && map.getNumberOfAliveAnimals() <=5){
+                map.magicHappen();
             }
             try {
                 Thread.sleep(moveDelay);

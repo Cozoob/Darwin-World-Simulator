@@ -45,6 +45,12 @@ public class App extends Application {
     private Scene menuScene;
     private boolean isMap1EndWork = false;
     private boolean isMap2EndWork = false;
+    private Text magicText1 = new Text("");
+    private Text magicText2 = new Text("");
+    private HBox animalStats1 = new HBox();
+    private HBox animalStats2 = new HBox();
+    private int counterOfMagic1 = 0;
+    private int counterOfMagic2 = 0;
 
     @Override
     public void start(Stage primaryStage) throws IllegalArgumentException{
@@ -144,7 +150,7 @@ public class App extends Application {
         gridPane.setGridLinesVisible(true);
 
         // set up the WallMap
-        Map<String, Integer> input1 = inputList.get(1);
+        Map<String, Integer> input1 = inputList.get(0);
         boolean isMagic1 = input1.get("worldType") == 1;
         WallMap wallMap = new WallMap(isMagic1, input1.get("minEnergyToCopulate"), input1.get("maxAnimalEnergy"), input1.get("grassEnergy"), input1.get("amountGrass"), input1.get("mapWidth"), input1.get("mapHeight"), input1.get("jungleWidth"),input1.get("jungleHeight"));
         map1 = wallMap;
@@ -152,7 +158,7 @@ public class App extends Application {
         engine1.setMoveDelay(input1.get("dayDelay"));
 
         // set up the WrappedMap
-        Map<String, Integer> input2 = inputList.get(0);
+        Map<String, Integer> input2 = inputList.get(1);
         boolean isMagic2 = input2.get("worldType") == 1;
         WrappedMap wrappedMap = new WrappedMap(isMagic2, input2.get("minEnergyToCopulate"), input2.get("maxAnimalEnergy"), input2.get("grassEnergy"), input2.get("amountGrass"), input2.get("mapWidth"), input2.get("mapHeight"), input2.get("jungleWidth"),input2.get("jungleHeight"));
         map2 = wrappedMap;
@@ -216,17 +222,24 @@ public class App extends Application {
         gridPane2.setPadding(new Insets(10));
 
         VBox mapBox1 = new VBox();
-        mapBox1.getChildren().addAll(hBox1, mapStatistics1.getModeOfGenotypes());
+        mapBox1.getChildren().addAll(hBox1, new Text("MODE OF GENOTYPES"), mapStatistics1.getModeOfGenotypes());
+        mapBox1.setAlignment(Pos.CENTER);
         VBox mapBox2 = new VBox();
-        mapBox2.getChildren().addAll(hBox2, mapStatistics2.getModeOfGenotypes());
+        mapBox2.getChildren().addAll(hBox2, new Text("MODE OF GENOTYPES"), mapStatistics2.getModeOfGenotypes());
+        mapBox2.setAlignment(Pos.CENTER);
 
+        if(map1.getIsMagic()){
+            mapBox1.getChildren().add(magicText1);
+        }
+        mapBox1.getChildren().add(animalStats1);
+        if(map2.getIsMagic()){
+            mapBox2.getChildren().add( magicText2);
+        }
+        mapBox2.getChildren().add( animalStats2);
 
-        hBox0.getChildren().addAll(mapBox1, mapBox2); // do zmiany
+        hBox0.getChildren().addAll(mapBox1, mapBox2);
 
         HBox hBox = new HBox();
-//        Text mapName1 = new Text("Wall Map");
-//        Text mapName2 = new Text("Wrapped Map");
-//        hBox.getChildren().addAll(mapName1, mapName2);
 
         VBox vBox = new VBox();
         vBox.getChildren().addAll(hBox, hBox0);
@@ -295,19 +308,6 @@ public class App extends Application {
         day2.setText("DAY: " + engine2.getCurrentDay());
     }
 
-//    @Override
-//    public synchronized void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) {
-//        Platform.runLater( () ->{
-//            try {
-//                drawGrid(this.map1, this.gridPane1);
-//                drawGrid(this.map2, this.gridPane2);
-//                updateDayText();
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//        } );
-//    }
-
     public synchronized void updateMap(){
         Platform.runLater( () ->{
             try {
@@ -326,6 +326,17 @@ public class App extends Application {
                     saveData(map2);
                     CSVWriterMap2.write();
                 }
+                if(map1.getIsMagic() && map1.getCounterOfMagic() != counterOfMagic1){
+                    counterOfMagic1 = map1.getCounterOfMagic();
+//                    System.out.println("AAAA");
+                    magicText1.setText("MAGIC HAPPENED AT DAY " + engine1.getCurrentDay() + "!");
+                }
+
+                if(map2.getIsMagic() && map2.getCounterOfMagic() != counterOfMagic2){
+                    counterOfMagic2 = map2.getCounterOfMagic();
+                    magicText2.setText("MAGIC HAPPENED AT DAY " + engine2.getCurrentDay() + "!");
+                }
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -351,7 +362,7 @@ public class App extends Application {
             int rowIndex = 0;
             input.add(new HashMap<>());
 
-            if(i == 0){
+            if(i == 1){
                 addMapOptionHeader(rowIndex, offset, menu, "WRAPPED MAP DETAILS");
                 rowIndex++;
             } else {
