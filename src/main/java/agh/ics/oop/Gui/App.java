@@ -19,7 +19,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -43,13 +42,12 @@ public class App extends Application {
     private MapStatistics mapStatistics2;
     private CSVWriter CSVWriterMap1;
     private CSVWriter CSVWriterMap2;
-    private Scene menuScene;
     private boolean isMap1EndWork = false;
     private boolean isMap2EndWork = false;
-    private Text magicText1 = new Text("");
-    private Text magicText2 = new Text("");
-    private HBox animalStats1 = new HBox();
-    private HBox animalStats2 = new HBox();
+    private final Text magicText1 = new Text("");
+    private final Text magicText2 = new Text("");
+    private final HBox animalStats1 = new HBox();
+    private final HBox animalStats2 = new HBox();
     private int counterOfMagic1 = 0;
     private int counterOfMagic2 = 0;
     private boolean isAnimal1Tracked = false;
@@ -87,7 +85,7 @@ public class App extends Application {
         Vector2d lowerLeft = map.getLowerLeft();
         Vector2d upperRight = map.getUpperRight();
 
-        // index Y axis
+        // index X axis
         for (int i = 0; i <= upperRight.x - lowerLeft.x; i++){
             gridPane.getColumnConstraints().add(new ColumnConstraints(columnSize));
             Label index = new Label(String.valueOf(i + lowerLeft.x));
@@ -95,39 +93,47 @@ public class App extends Application {
             GridPane.setHalignment(index, HPos.CENTER);
         }
 
-        // index X axis
+        // index Y axis
         for (int i = 0; i <= upperRight.y - lowerLeft.y; i++){
             gridPane.getRowConstraints().add(new RowConstraints(rowSize));
             Label index = new Label(String.valueOf(upperRight.y - i));
             gridPane.add(index, 0, i + 1);
             GridPane.setHalignment(index, HPos.CENTER);
         }
-
-        for(int x = map.getLowerLeft().x; x <= map.getUpperRight().x; x++){
-            for(int y = map.getLowerLeft().y; y <= map.getUpperRight().y; y++){
+        for(int y = 0; y <= amountOfRows; y++){
+            for(int x = 0; x <= amountOfColumns; x++){
                 GridPane pane = new GridPane();
-                if(map.getJungleUpperRight().x >= x && x >= map.getJungleLowerLeft().x && map.getJungleUpperRight().y >= y && y >= map.getJungleLowerLeft().y){
+                if(map.getJungleUpperRight().x >= x && x >= map.getJungleLowerLeft().x && map.getJungleUpperRight().y >= y + 1 && y + 1 >= map.getJungleLowerLeft().y){
                     pane.setBackground(new Background(new BackgroundFill(Color.DARKGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
                 } else {
                     pane.setBackground(new Background(new BackgroundFill(Color.GREENYELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
                 }
-                gridPane.add(pane, y + 1, x + 1);
+                gridPane.add(pane, x + 1, y + 1);
                 GridPane.setHalignment(pane, HPos.CENTER);
             }
         }
 
         // add grass and animal icons
-        // LinkedHashMap<Vector2d, Animal> animals = map.getAnimals();
         LinkedHashMap<Vector2d, Grass> grasses = map.getGrassPositions();
 
         ArrayList<Grass> grassesValues = new ArrayList<>(grasses.values());
         ArrayList<Animal> animalsValues = new ArrayList<>(map.getAliveAnimals());
 
         for(Grass grass : grassesValues){
+            if(grass == null){
+                break;
+            }
             grass.setHeight(columnSize * 3 / 4);
             grass.setWidth(rowSize * 3 / 4);
             GuiElementBox animalIcon = new GuiElementBox(grass);
             gridPane.add(animalIcon.vBox, grass.getPosition().x + 1 - lowerLeft.x, upperRight.y - grass.getPosition().y + 1, 1, 1);
+        }
+
+        ArrayList<Integer> modeOfGenotypes;
+        if(map.isAnyAliveAnimal()) {
+            modeOfGenotypes = map.getModeOfGenotypes();
+        } else {
+            modeOfGenotypes = new ArrayList<>();
         }
 
         for(Animal animal : animalsValues){
@@ -140,26 +146,34 @@ public class App extends Application {
 
             pane.setOnMouseClicked(event -> {
                 if(map instanceof WallMap){
-                    //pane.setBackground(new Background(new BackgroundFill(Color.MEDIUMVIOLETRED, CornerRadii.EMPTY, Insets.EMPTY)));
                     isAnimal1Tracked = true;
                     animal1Tracked = animal;
                 } else {
-                    //pane.setBackground(new Background(new BackgroundFill(Color.MEDIUMVIOLETRED, CornerRadii.EMPTY, Insets.EMPTY)));
                     isAnimal2Tracked = true;
                     animal2Tracked = animal;
                 }
             });
 
             if(isAnimal1Tracked && animal1Tracked.equals(animal)){
-                Label labelTracked = new Label("  !");
+                Label labelTracked = new Label("   !");
                 labelTracked.setTextFill(Color.WHITE);
                 pane.setBackground(new Background(new BackgroundFill(Color.MEDIUMVIOLETRED, CornerRadii.EMPTY, Insets.EMPTY)));
                 pane.getChildren().addAll(labelTracked);
             } else if(isAnimal2Tracked && animal2Tracked.equals(animal)){
-                Label labelTracked = new Label("  !");
+                Label labelTracked = new Label("   !");
                 labelTracked.setTextFill(Color.WHITE);
                 pane.setBackground(new Background(new BackgroundFill(Color.MEDIUMVIOLETRED, CornerRadii.EMPTY, Insets.EMPTY)));
                 pane.getChildren().addAll(labelTracked);
+            }
+
+            Collections.sort(animal.genotype);
+            if(animal.genotype.equals(modeOfGenotypes)){
+                Label labelDominant = new Label("*");
+                labelDominant.setTextFill(Color.WHITE);
+                Label strip = new Label("");
+                strip.setMinSize(rowSize * 1/8, columnSize * 1 / 8);
+                strip.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+                pane.getChildren().addAll(strip, labelDominant);
             }
 
 
@@ -243,15 +257,6 @@ public class App extends Application {
         // add statistics to maps
         mapStatistics1 = new MapStatistics(map1);
         mapStatistics2 = new MapStatistics(map2);
-//        VBox statsBox1 = new VBox();
-//        statsBox1.getChildren().addAll(mapStatistics1.lineChart, mapStatistics1.getModeOfGenotypes());
-//        VBox statsBox2 = new VBox();
-//        statsBox2.getChildren().addAll(mapStatistics2.lineChart, mapStatistics2.getModeOfGenotypes());
-
-
-//        hBox0.getChildren().addAll(mapStatistics1.lineChart, vBox1, vBox2, mapStatistics2.lineChart);
-//        gridPane1.setPadding(new Insets(10));
-//        gridPane2.setPadding(new Insets(10));
 
         HBox hBox1 = new HBox();
         hBox1.getChildren().addAll(mapStatistics1.lineChart, vBox1);
@@ -289,9 +294,16 @@ public class App extends Application {
         hBox0.getChildren().addAll(mapBox1, mapBox2);
 
         HBox hBox = new HBox();
+        Button exitButton = new Button("Exit");
+        exitButton.setOnAction(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
+        hBox.getChildren().add(exitButton);
+        hBox.setAlignment(Pos.CENTER);
 
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(hBox, hBox0);
+        vBox.getChildren().addAll(hBox,hBox0);
         vBox.setSpacing(20);
 
         StackPane stackPane = new StackPane(vBox);
@@ -317,8 +329,8 @@ public class App extends Application {
         primaryStage.setFullScreen(true);
         primaryStage.show();
 
-        CSVWriterMap1 = new CSVWriter(map1, engine1);
-        CSVWriterMap2 = new CSVWriter(map2, engine2);
+        CSVWriterMap1 = new CSVWriter(map1);
+        CSVWriterMap2 = new CSVWriter(map2);
 
         CSVWriterMap1.generateData(map1, engine1);
         CSVWriterMap2.generateData(map2, engine2);
@@ -400,11 +412,11 @@ public class App extends Application {
         Text genUp = new Text("ITS GENOTYPE:");
         Collections.sort(animal.genotype);
         Text genDown = new Text(animal.getGenotype().toString());
-        Text children = new Text("Amount of children: " +  String.valueOf(animal.getNumberOfChildren()));
-        Text descendant = new Text("Amount of descendant: " + String.valueOf(animal.getNumberOfDescendants()));
+        Text children = new Text("Amount of children: " + animal.getNumberOfChildren());
+        Text descendant = new Text("Amount of descendant: " + animal.getNumberOfDescendants());
         vBox.getChildren().addAll(title, genUp, genDown, children, descendant);
         if(!animal.isAlive){
-            Text deathDay = new Text("The death day: " + String.valueOf(animal.daysAlive));
+            Text deathDay = new Text("The death day: " + animal.daysAlive);
             vBox.getChildren().add(deathDay);
         }
 
@@ -417,7 +429,7 @@ public class App extends Application {
         GridPane menu = new GridPane();
         menu.setAlignment(Pos.CENTER);
 
-        menuScene = new Scene(menu, 1300, 800);
+        Scene menuScene = new Scene(menu, 1300, 800);
         for(int i = 0; i < 25;i++){
             menu.getRowConstraints().add(new RowConstraints(32));
         }
@@ -434,11 +446,10 @@ public class App extends Application {
 
             if(i == 1){
                 addMapOptionHeader(rowIndex, offset, menu, "WRAPPED MAP DETAILS");
-                rowIndex++;
             } else {
                 addMapOptionHeader(rowIndex, offset, menu, "WALL MAP DETAILS");
-                rowIndex++;
             }
+            rowIndex++;
             addMapOptionHeader(rowIndex,offset,menu, "MAP PROPERTIES");
             rowIndex++;
             addMapOptionHeader(rowIndex,offset,menu, "(values must be natural numbers (integers that are greater than 0))");
@@ -463,7 +474,7 @@ public class App extends Application {
             inputNames.add("jungleWidth");
 
             rowIndex += 1;
-            addTwoRadioButtonsWithOptions(rowIndex, offset, menu, "Normal World", "Magic World", 0, 1, "worldType", input.get(i));
+            addTwoRadioButtonsWithOptions(rowIndex, offset, menu, input.get(i));
             inputNames.add("worldType");
 
             rowIndex += 1;
@@ -586,10 +597,10 @@ public class App extends Application {
         }));
     }
 
-    private void addTwoRadioButtonsWithOptions(int rowIndex, int offset, GridPane menu, String name1, String name2, int value1, int value2, String fieldName, Map<String, Integer> input){
+    private void addTwoRadioButtonsWithOptions(int rowIndex, int offset, GridPane menu, Map<String, Integer> input){
         ToggleGroup toggleGroup = new ToggleGroup();
-        RadioButton radioButton1 = new RadioButton(name1);
-        RadioButton radioButton2 = new RadioButton(name2);
+        RadioButton radioButton1 = new RadioButton("Normal World");
+        RadioButton radioButton2 = new RadioButton("Magic World");
         radioButton1.setToggleGroup(toggleGroup);
         radioButton2.setToggleGroup(toggleGroup);
 
@@ -600,15 +611,15 @@ public class App extends Application {
         GridPane.setHalignment(hBox, HPos.CENTER);
 
         radioButton1.setSelected(true);
-        input.put(fieldName, value1);
+        input.put("worldType", 0);
 
         toggleGroup.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
             String selectedName = (((RadioButton) toggleGroup.getSelectedToggle()).getText());
 
-            if (selectedName.equals(name1))
-                input.put(fieldName, value1);
+            if (selectedName.equals("Normal World"))
+                input.put("worldType", 0);
             else
-                input.put(fieldName, value2);
+                input.put("worldType", 1);
 
         }));
 

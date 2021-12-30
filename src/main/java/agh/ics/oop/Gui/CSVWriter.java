@@ -4,23 +4,17 @@ import agh.ics.oop.AbstractClasses.AbstractWorldMap;
 import agh.ics.oop.Engine.SimulationEngine;
 import agh.ics.oop.Maps.WallMap;
 
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
 public class CSVWriter {
     private final AbstractWorldMap map;
-    private final SimulationEngine engine;
     private final StringBuilder title = new StringBuilder();
     private final StringBuilder days = new StringBuilder();
     public final StringBuilder document = new StringBuilder();
 
-    public CSVWriter(AbstractWorldMap map, SimulationEngine engine){
+    public CSVWriter(AbstractWorldMap map){
         this.map = map;
-        this.engine = engine;
         createTitle();
     }
 

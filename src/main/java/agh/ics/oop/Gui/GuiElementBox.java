@@ -4,11 +4,9 @@ import agh.ics.oop.WorldElements.Animal;
 import agh.ics.oop.WorldElements.Grass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
-import javafx.scene.text.Font;
 
 import java.io.FileNotFoundException;
 
@@ -16,11 +14,8 @@ public class GuiElementBox extends Node{
     public ImageView imageView;
     public Label label;
     public VBox vBox;
-    public int width;
-    public int height;
 
     public GuiElementBox(Object object) throws FileNotFoundException{
-        Image image;
         if(object instanceof Animal){
             Animal animal = (Animal) object;
             this.imageView = animal.getImageView();
