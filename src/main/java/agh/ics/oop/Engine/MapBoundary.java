@@ -1,4 +1,4 @@
-package agh.ics.oop.Engine;
+package agh.ics.oop.Engine; // czy to na pewno część silnika?
 import agh.ics.oop.Interfaces.IPositionChangeObserver;
 import agh.ics.oop.Interfaces.IWorldMap;
 import agh.ics.oop.WorldElements.Animal;

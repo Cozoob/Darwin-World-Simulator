@@ -1,5 +1,5 @@
 package agh.ics.oop.EnumClasses;
-
+// to że coś jest enumem o niczym nie świadczy - to nie jest dobre kryterium do łączenia w pakiety
 import agh.ics.oop.WorldElements.Vector2d;
 
 public enum MapDirection {
@@ -27,7 +27,7 @@ public enum MapDirection {
 
     public MapDirection next(){
         return switch(this){
-            case NORTH -> NORTHEAST;
+            case NORTH -> NORTHEAST;    // przy tylu case'ach już się zaczyna opłacać korzystanie z values i ordinal, lub inne skrócenie metody
             case NORTHEAST -> EAST;
             case EAST -> SOUTHEAST;
             case SOUTHEAST -> SOUTH;
@@ -53,7 +53,7 @@ public enum MapDirection {
 
     public Vector2d toUnitVector(){
         return switch (this){
-            case NORTH -> new Vector2d(0, 1);
+            case NORTH -> new Vector2d(0, 1);   // nowy wektor co wywołanie
             case NORTHEAST -> new Vector2d(1,1);
             case EAST -> new Vector2d(1, 0);
             case SOUTHEAST -> new Vector2d(1, -1);

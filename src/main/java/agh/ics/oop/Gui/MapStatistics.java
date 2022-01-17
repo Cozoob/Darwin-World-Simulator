@@ -8,7 +8,7 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
-public class MapStatistics {
+public class MapStatistics {    // proszę przemyśleć tę nazwę
     private final AbstractWorldMap map;
     private final XYChart.Series<Number, Number> numberOfAliveAnimals = new XYChart.Series<>();
     private final XYChart.Series<Number, Number> numberOfGrass= new XYChart.Series<>();

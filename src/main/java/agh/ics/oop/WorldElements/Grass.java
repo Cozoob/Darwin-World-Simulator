@@ -10,15 +10,15 @@ import java.io.FileNotFoundException;
 
 public class Grass implements IMapElement {
     private final Vector2d position;
-    public int energy;
-    private final Image image;
-    private double width = 50;
+    public int energy;  // public?
+    private final Image image;  // to lepiej przenieść to GUI
+    private double width = 50;  // jw.
     private double height = 50;
 
     public Grass(Vector2d position, int energy) throws FileNotFoundException {
         this.position = position;
         this.energy = energy;
-        this.image = new Image(new FileInputStream("src/main/resources/grass-icon.jpg"));
+        this.image = new Image(new FileInputStream("src/main/resources/grass-icon.jpg"));   // czy każda trawa musi mieć swój obrazek?
     }
 
     public Vector2d getPosition(){return this.position;}

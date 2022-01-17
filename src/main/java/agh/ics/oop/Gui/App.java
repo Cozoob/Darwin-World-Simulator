@@ -27,9 +27,9 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 
-public class App extends Application {
+public class App extends Application {  // ta klasa jest przerośnięta
     private AbstractWorldMap map1;
-    private AbstractWorldMap map2;
+    private AbstractWorldMap map2;  // jakby map było więcej niż 2, to to by było nie do ogarnięcia
     private final GridPane gridPane1 = new GridPane();
     private final GridPane gridPane2 = new GridPane();
     private SimulationEngine engine1;

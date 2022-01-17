@@ -1,4 +1,4 @@
-package agh.ics.oop.Engine;
+package agh.ics.oop.Engine; // pakiety małymi literami
 
 import agh.ics.oop.AbstractClasses.AbstractWorldMap;
 
@@ -17,7 +17,7 @@ public class SimulationEngine implements IEngine, Runnable{
     private int currentDay;
     public boolean isRunning = true;
     public int days;
-    public int animalStartingEnergy;
+    public int animalStartingEnergy;    // modyfikowalny public?
     public int amountStartingAnimals;
 
     public SimulationEngine(AbstractWorldMap map, int days, int animalStartingEnergy, int amountStartingAnimals) {

@@ -27,9 +27,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected int amountOfGrass;
     protected int maxAnimalEnergy;
     protected int minimumEnergyToCopulate;
-    protected boolean isMagic;
+    protected boolean isMagic;  // czy to jest zadanie dla mapy?
     protected int counterOfMagic = 0;
-    protected LinkedHashMap<String, Integer> genotypes = new LinkedHashMap<>();
+    protected LinkedHashMap<String, Integer> genotypes = new LinkedHashMap<>(); // czy to jest zadanie dla mapy?
 
 
     public AbstractWorldMap(boolean isMagic,int minimumEnergyToCopulate,int maxAnimalEnergy ,int grassEnergy, int amountOfGrass, int width, int height, int jungleWidth, int jungleHeight){
@@ -173,7 +173,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public String toString(){return new MapVisualizer(this).draw(getLowerLeft(), getUpperRight());}
 
-    public void animalsCopulate(){
+    public void animalsCopulate(){  // długa ta metoda, dobrze by ją zdekomponować
         for(HashSet<Animal> hashSet : this.animals.values()){
             if(hashSet.size() > 1){
                 ArrayList<Animal> twoStrongestAnimals = getTwoStrongestAnimals(hashSet);
@@ -516,7 +516,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         StringBuilder key = new StringBuilder();
         ArrayList<Integer> intsToConvert = new ArrayList<>();
         // count each gene
-        int counter0 = 0;
+        int counter0 = 0;   // a gdyby użyć tablicy i pętli?
         int counter1 = 0;
         int counter2 = 0;
         int counter3 = 0;

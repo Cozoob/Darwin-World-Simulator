@@ -7,11 +7,11 @@ import agh.ics.oop.Maps.WallMap;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-public class CSVWriter {
+public class CSVWriter {    // czy to GUI?
     private final AbstractWorldMap map;
     private final StringBuilder title = new StringBuilder();
     private final StringBuilder days = new StringBuilder();
-    public final StringBuilder document = new StringBuilder();
+    public final StringBuilder document = new StringBuilder();  // public?
 
     public CSVWriter(AbstractWorldMap map){
         this.map = map;

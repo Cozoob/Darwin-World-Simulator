@@ -3,7 +3,7 @@ package agh.ics.oop.WorldElements;
 import java.util.Objects;
 
 public class Vector2d {
-    public int x;
+    public int x;   // modyfikowalne pole
     public int y;
 
     public Vector2d(int x, int y) {
